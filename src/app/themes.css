@@ -1,0 +1,95 @@
+/*
+ * Theme tokens. Every component styles itself from these variables only, so a
+ * theme switch is a single attribute change on <html> with no re-render.
+ */
+
+:root,
+[data-theme="minimalist"] {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --ink: #18181b;
+  --muted: #71717a;
+  --accent: #2563eb;
+  --accent-ink: #ffffff;
+  --border: #e4e4e7;
+  --radius: 0.25rem;
+  --border-width: 1px;
+  --shadow: none;
+  --display-family: var(--font-geist-sans);
+  --body-family: var(--font-geist-sans);
+  --display-weight: 600;
+  --display-transform: none;
+  --display-tracking: -0.02em;
+}
+
+[data-theme="modern"] {
+  --bg: #09090b;
+  --surface: #18181b;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --accent: #6366f1;
+  --accent-ink: #ffffff;
+  --border: #27272a;
+  --radius: 1rem;
+  --border-width: 1px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -8px rgb(99 102 241 / 0.35);
+  --display-family: var(--font-geist-sans);
+  --body-family: var(--font-geist-sans);
+  --display-weight: 700;
+  --display-transform: none;
+  --display-tracking: -0.03em;
+}
+
+[data-theme="brutalist"] {
+  --bg: #fdfd96;
+  --surface: #ffffff;
+  --ink: #000000;
+  --muted: #3f3f46;
+  --accent: #ff3b00;
+  --accent-ink: #ffffff;
+  --border: #000000;
+  --radius: 0rem;
+  --border-width: 3px;
+  --shadow: 6px 6px 0 0 #000000;
+  --display-family: var(--font-geist-sans);
+  --body-family: var(--font-geist-mono);
+  --display-weight: 900;
+  --display-transform: uppercase;
+  --display-tracking: -0.01em;
+}
+
+[data-theme="editorial"] {
+  --bg: #faf6ef;
+  --surface: #fffdf8;
+  --ink: #1c1917;
+  --muted: #78716c;
+  --accent: #b91c1c;
+  --accent-ink: #fffdf8;
+  --border: #e7e0d4;
+  --radius: 0.125rem;
+  --border-width: 1px;
+  --shadow: 0 1px 0 0 #e7e0d4;
+  --display-family: var(--font-display-serif);
+  --body-family: var(--font-geist-sans);
+  --display-weight: 400;
+  --display-transform: none;
+  --display-tracking: -0.01em;
+}
+
+[data-theme="terminal"] {
+  --bg: #0b0f0b;
+  --surface: #111811;
+  --ink: #3ef07c;
+  --muted: #2b8f4f;
+  --accent: #3ef07c;
+  --accent-ink: #0b0f0b;
+  --border: #1f3a26;
+  --radius: 0rem;
+  --border-width: 1px;
+  --shadow: none;
+  --display-family: var(--font-geist-mono);
+  --body-family: var(--font-geist-mono);
+  --display-weight: 700;
+  --display-transform: uppercase;
+  --display-tracking: 0.04em;
+}

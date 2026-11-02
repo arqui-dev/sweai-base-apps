@@ -1,0 +1,129 @@
+# Hire Service
+
+A study base for building production web applications. One Next.js app on
+Vercel, wired to four managed services, documented well enough to copy.
+
+The demonstration product is a consulting landing page: free and premium posts,
+a paywall that costs one coffee, a newsletter, and two lead lists. That set was
+chosen because it exercises every integration at least once.
+
+```
+Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
+  Supabase   auth (magic link) + Postgres with row level security
+  Stripe     hosted Checkout, one-off payment, signed webhook
+  Sanity     headless CMS, Studio embedded at /studio
+  Resend     welcome, confirmation and campaign email
+  Vercel     preview per pull request, production on main
+```
+
+## Pages
+
+| Route | What it does |
+|-------|--------------|
+| `/` | Landing page: services, latest posts, coffee button, newsletter, theme gallery |
+| `/blog` | Post list, free and premium marked |
+| `/blog/[slug]` | Post, or a paywall if premium and unpaid |
+| `/subscribe` | Newsletter signup |
+| `/waitlist` | Lead capture, `waitlist` list |
+| `/early-access` | Lead capture, `early-access` list |
+| `/cart` | Single-line-item cart with a quantity stepper |
+| `/login` | Magic-link sign in, no passwords |
+| `/profile` | Email, premium state, newsletter state, sign out |
+| `/success` | Post-payment landing |
+| `/studio` | Sanity Studio |
+
+## API
+
+| Route | Auth | Validated by |
+|-------|------|--------------|
+| `POST /api/newsletter` | Public, 5 req/min/IP | `subscribeInput` |
+| `POST /api/leads` | Public, 5 req/min/IP | `leadInput` |
+| `POST /api/checkout` | Public, 10 req/min/IP | `checkoutInput` |
+| `POST /api/stripe/webhook` | Stripe signature | `stripe.webhooks.constructEvent` |
+| `POST /api/newsletter/send` | Bearer `ADMIN_API_TOKEN`, constant-time compare | `campaignInput` |
+| `GET /auth/callback` | Supabase code | Same-origin `next` only |
+
+## Themes
+
+Five presets: `minimalist`, `modern`, `brutalist`, `editorial`, `terminal`.
+Switch with the control in the header. Each one is a block of CSS custom
+properties in `src/app/themes.css`, so no component knows which is active.
+Adding a sixth is one CSS block and one array entry.
+
+## Getting started
+
+```bash
+cp .env.example .env.local     # fill in the four service blocks
+npm install
+npm run dev
+```
+
+The repository ships a `.env.local` with placeholders so `npm run build` works
+before any account exists. Replace them with real values before using a
+feature.
+
+Then:
+
+1. Paste `supabase/schema.sql` into the Supabase SQL editor. It creates four
+   tables and enables row level security on all of them.
+2. Add `http://localhost:3000/auth/callback` to the Supabase allowed redirect
+   URLs.
+3. Create a post at `/studio`. Toggle **Premium** to see the paywall.
+4. Forward the Stripe webhook locally:
+   `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+
+Full deployment steps, including the Vercel and Stripe dashboard settings, are
+in [docs/arc42/07-deployment-view.md](docs/arc42/07-deployment-view.md).
+
+## Scripts
+
+```bash
+npm run dev         # Next dev server
+npm run verify      # typecheck + lint + test
+npm run build       # production build
+npm run test:watch  # vitest in watch mode
+```
+
+CI runs `verify` plus `build` with placeholder credentials, and gitleaks over
+the full history. The build never needs a real key.
+
+## Layout
+
+```
+src/
+  app/
+    (site)/            pages, wrapped in the nav and footer shell
+    api/               route handlers: HTTP concerns only
+    auth/              magic-link callback and sign out
+    studio/            Sanity Studio, outside the site shell
+    globals.css        Tailwind tokens mapped from theme variables
+    themes.css         the five theme blocks
+  features/            the rules: schemas, services, the paywall gate
+  lib/                 one configured client per external service
+  shared/              Result, logger, request body parsing
+  components/          presentation, no business logic
+  env.ts               the only reader of secret env vars
+  proxy.ts             session refresh, protected-route redirect (was middleware.ts)
+supabase/schema.sql    four tables, five policies, one trigger
+sanity/schema/         the post document type
+docs/arc42/            architecture, twelve sections, Mermaid C4
+docs/adr/              five decision records
+docs/personas.md       five personas and the decisions made for them
+docs/use-cases.md      twelve use cases with their designed failure
+.claude/agents/        six project agents
+```
+
+## Documentation
+
+- [Architecture (arc42)](docs/arc42/README.md), with C4 context, container and
+  component diagrams plus four runtime sequences
+- [Decision records](docs/arc42/09-architecture-decisions.md)
+- [Personas](docs/personas.md) and [use cases](docs/use-cases.md)
+- [Rules for AI agents](CLAUDE.md)
+
+## What this is not
+
+Not a product, and not a template to deploy unchanged. There are no recurring
+subscriptions, refunds, invoices, team accounts, comments, search or i18n.
+Deliberate gaps and the trigger for closing each are listed in
+[section 11](docs/arc42/11-risks-and-technical-debt.md).
