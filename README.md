@@ -96,8 +96,10 @@ npm run build       # production build
 npm run test:watch  # vitest in watch mode
 ```
 
-CI runs `verify` plus `build` with placeholder credentials, and gitleaks over
-the full history. The build never needs a real key.
+CI runs `verify` plus `build` with placeholder credentials, and a pinned
+gitleaks CLI over the full history. The build never needs a real key.
+Placeholders are allowlisted in `.gitleaks.toml` by value rather than by path,
+so a real credential in one of those same files still fails the scan.
 
 ## Layout
 

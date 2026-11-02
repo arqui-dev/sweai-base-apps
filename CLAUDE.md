@@ -56,6 +56,10 @@ Ordered highest risk first. Ask before changing anything in layers 1 to 3.
   flag them.
 - `hello@example.com` is the placeholder sender.
 
+These values are allowlisted in `.gitleaks.toml` by value, never by path, so a
+real credential committed to the same file still fails the scan. Adding a new
+placeholder means adding it there and here, in the same commit.
+
 ## Forbidden patterns
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,

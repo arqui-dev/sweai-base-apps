@@ -6,7 +6,7 @@ flowchart TB
 
   subgraph CI["GitHub Actions"]
     v["verify: typecheck, lint, test, build<br/>placeholder env only"]
-    s["secrets: gitleaks over full history"]
+    s["secrets: pinned gitleaks CLI<br/>over full history"]
   end
 
   gh --> v

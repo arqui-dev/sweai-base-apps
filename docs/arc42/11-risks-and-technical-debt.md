@@ -28,6 +28,7 @@ the current list.
 | Sanity dataset is public-read | Draft content could be fetched with a guessed query | Queries exclude `drafts.**`, and premium bodies gate on `$entitled` | Content becomes commercially sensitive |
 | Studio bundle ships to the browser | Large client-only bundle on `/studio` | Route is `noindex`, link is a full page load, no prefetch | Bundle size affects the site's own routes |
 | `NEWSLETTER_SECRET` rotation breaks mailed unsubscribe links | Recipients see "not valid" and cannot leave | Documented as rotate-never in section 7, and the profile page carries a freshly signed link | A compromise forces rotation: accept both the old and new secret for one mailing cycle |
+| A new placeholder is added without allowlisting it | The secrets job fails and the real signal gets ignored | `.gitleaks.toml` and CLAUDE.md list every placeholder, and the allowlist is value-scoped so it cannot hide a real key | Placeholders outgrow a hand-maintained list |
 | No uptime or error alerting | A broken grant path could go unnoticed | Vercel logs | The site stops being a study project |
 
 ## Known gaps, by request

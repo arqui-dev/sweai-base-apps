@@ -1,0 +1,19 @@
+# Secret scanning config. Extends the default rule set rather than replacing it.
+[extend]
+useDefault = true
+
+# Allowlisted by value, never by path. Allowlisting `.github/workflows/ci.yml`
+# or `CLAUDE.md` wholesale would hide a real key committed to those same files
+# later; matching the placeholder strings themselves cannot.
+#
+# Every value here is documented in CLAUDE.md under "Placeholder convention".
+# If one of these ever holds a real credential, that is the bug, not the scan.
+[allowlist]
+description = "Documented placeholders used so the build never needs real credentials"
+regexes = [
+  # sk_test_placeholder, whsec_placeholder, sb_secret_placeholder,
+  # placeholder-admin-token-32-chars, placeholder-newsletter-secret-32-chars
+  '''(?i)placeholder''',
+  # The fixed HMAC key in unsubscribe.test.ts. Signs nothing outside the test.
+  '''test-secret-at-least-32-chars-long''',
+]
