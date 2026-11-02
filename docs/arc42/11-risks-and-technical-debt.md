@@ -21,6 +21,8 @@ the current list.
 
 | Risk | Impact | Current mitigation | Trigger to do more |
 |------|--------|--------------------|--------------------|
+| A refunded or disputed payment keeps its premium access | Direct revenue loss, and it is unbounded | None today. Only `checkout.session.completed` is handled | Before the first real charge. See F1 in the Stripe review |
+| Delayed payment methods never grant access | Pix and Boleto buyers pay and get nothing | None today. Those settle via `async_payment_succeeded`, which is unhandled | Before enabling any Brazilian payment method. See F2 |
 | Webhook not configured after a deploy | Payments succeed, access is never granted | `/success` tells the buyer to reload and sign in | Add a Stripe webhook health check to the deploy checklist the first time it happens |
 | Previews share the dev Supabase project | A bad preview can dirty dev data | Dev project holds no real data | Real user data lands in the dev project |
 | Guest buyer never signs up | Entitlement exists, nobody uses it | Receipt email explains signing in with the same address | Measurable share of guest purchases going unclaimed |

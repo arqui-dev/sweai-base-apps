@@ -135,6 +135,8 @@ docs/use-cases.md      thirteen use cases with their designed failure
   component diagrams plus four runtime sequences
 - [Decision records](docs/arc42/09-architecture-decisions.md)
 - [Personas](docs/personas.md) and [use cases](docs/use-cases.md)
+- [Stripe integration review](docs/stripe-integration-review.md), eight findings
+  and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
 
 ## What this is not
