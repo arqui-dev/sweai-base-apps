@@ -108,6 +108,8 @@ npm run dev           # Next dev server
 npm run verify        # typecheck + lint + test
 npm run build         # production build
 npm run test:watch    # vitest in watch mode
+npm run audit:runtime # gated: any advisory in the runtime tree fails
+npm run audit:all     # reported: build-time tooling, not gated
 npm run scan:secrets  # gitleaks over full history (needs the gitleaks binary)
 ```
 
@@ -140,7 +142,7 @@ src/
 supabase/schema.sql    four tables, five policies, one trigger
 sanity/schema/         the post document type, deployed with `npx sanity deploy`
 docs/arc42/            architecture, twelve sections, Mermaid C4
-docs/adr/              six decision records
+docs/adr/              seven decision records
 docs/personas.md       five personas and the decisions made for them
 docs/use-cases.md      thirteen use cases with their designed failure
 .claude/agents/        six project agents
@@ -152,14 +154,20 @@ docs/use-cases.md      thirteen use cases with their designed failure
   component diagrams plus four runtime sequences
 - [Decision records](docs/arc42/09-architecture-decisions.md)
 - [Personas](docs/personas.md) and [use cases](docs/use-cases.md)
+- [Dependency and vulnerability policy](docs/adr/ADR-007-dependency-and-vulnerability-policy.md),
+  and the [dependency register](docs/dependencies.md) justifying every library
+- [AI roadmap](docs/ai-roadmap.md), the agents and checks still to build
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings
   and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
 
 ## Dependencies
 
-`npm audit --omit=dev` reports zero vulnerabilities. Keeping it that way is why
-the Studio is hosted rather than embedded: `next-sanity` depends on the
+`npm audit --omit=dev` reports zero vulnerabilities, and CI fails on any
+advisory at all in the runtime tree: `--audit-level=info`, no triage step
+([ADR-007](docs/adr/ADR-007-dependency-and-vulnerability-policy.md)). Every
+library is justified in [the register](docs/dependencies.md). Keeping the tree
+clean is why the Studio is hosted rather than embedded: `next-sanity` depends on the
 `sanity` editor package in production, which pulls the Sanity CLI and a Vite
 plugin tree with 21 findings, 3 of them high. None was reachable from a
 request, but an audit that always reports high findings is an audit nobody

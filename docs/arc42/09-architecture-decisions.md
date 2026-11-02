@@ -12,6 +12,7 @@ at merge time.
 | [ADR-004](../adr/ADR-004-css-custom-properties-for-theming.md) | CSS custom properties for theming instead of per-theme components | Accepted |
 | [ADR-005](../adr/ADR-005-paywall-enforced-in-the-groq-query.md) | Enforce the paywall in the GROQ query | Accepted |
 | [ADR-006](../adr/ADR-006-hosted-sanity-studio.md) | Host the Sanity Studio on Sanity instead of embedding it | Accepted |
+| [ADR-007](../adr/ADR-007-dependency-and-vulnerability-policy.md) | Dependency and vulnerability policy: zero runtime vulnerabilities, enforced in CI | Accepted |
 
 ## Open questions
 

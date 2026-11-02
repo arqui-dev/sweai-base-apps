@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify": "npm run typecheck && npm run lint && npm run test",
-    "scan:secrets": "gitleaks git . --config .gitleaks.toml --gitleaks-ignore-path .gitleaksignore --redact --no-banner --exit-code 1"
+    "scan:secrets": "gitleaks git . --config .gitleaks.toml --gitleaks-ignore-path .gitleaksignore --redact --no-banner --exit-code 1",
+    "audit:runtime": "npm audit --omit=dev --audit-level=info",
+    "audit:all": "npm audit"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

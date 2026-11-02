@@ -31,6 +31,8 @@ the current list.
 | The hosted Studio drifts from the schema in git | Editors see fields that no longer match what the queries read | The schema is version controlled, and `npx sanity deploy` is one command | Add the deploy to a release checklist the first time it is forgotten |
 | `NEWSLETTER_SECRET` rotation breaks mailed unsubscribe links | Recipients see "not valid" and cannot leave | Documented as rotate-never in section 7, and the profile page carries a freshly signed link | A compromise forces rotation: accept both the old and new secret for one mailing cycle |
 | A new placeholder is added without allowlisting it | The secrets job fails and the real signal gets ignored | `.gitleaks.toml` and CLAUDE.md list every placeholder, and the allowlist is value-scoped so it cannot hide a real key | Placeholders outgrow a hand-maintained list |
+| Build-time `npm audit` is reported, not gated | A compromised build dependency could affect a build | Not reachable from a request; `npm ci`, SHA-pinned actions, checksum-verified downloads | Item C3 in [the roadmap](../ai-roadmap.md): when `@sanity/cli` ships a clean tree, collapse to one strict gate |
+| Row level security has no automated test | A policy regression fails silently as an empty list | Policies are short and reviewed; `rls-reviewer` exists | Item C2 in the roadmap, needs Postgres in CI |
 | No uptime or error alerting | A broken grant path could go unnoticed | Vercel logs | The site stops being a study project |
 
 ## Known gaps, by request

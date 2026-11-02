@@ -166,7 +166,36 @@ ones included: titles and excerpts are public, and only the body is gated. A
 failed Sanity query degrades to the static paths with a warning, because a
 missing sitemap costs more than a stale one.
 
-## 8.11 Security headers
+## 8.11 Third-party content and outbound email
+
+Two sinks take values this codebase did not write.
+
+`src/components/post-body.tsx` renders Portable Text from Sanity. A link's
+`href` goes through `safeHref`, which allows only `http:`, `https:`, `mailto:`
+and same-origin paths. React renders `href` verbatim and does not block
+`javascript:`, so without that check a link stored in the CMS is a stored-XSS
+sink reachable by anyone with Studio write access.
+
+The capture forms build email bodies by interpolation, and one unauthenticated
+request chooses both the recipient address and the name rendered in the
+message. Every interpolated value goes through `escapeHtml`, or the forms would
+let anyone mail arbitrary markup from a verified domain. Both helpers are nine
+lines over a built-in and are covered by `src/shared/sanitize.test.ts`.
+
+## 8.12 Dependency and vulnerability policy
+
+`npm run audit:runtime` gates the `--omit=dev` tree at `--audit-level=info`:
+any advisory, any severity, fails the build. Build and editor tooling is
+reported and not gated, because a Vite plugin cannot be reached by an HTTP
+request. [ADR-007](../adr/ADR-007-dependency-and-vulnerability-policy.md)
+carries the policy, [the register](../dependencies.md) justifies each
+dependency, and Dependabot covers what an audit on merge day cannot.
+
+The pipeline is treated as part of the supply chain: `npm ci` rather than
+`npm install`, actions pinned by commit SHA, `permissions: contents: read`, and
+a checksum on the one binary CI downloads.
+
+## 8.13 Security headers
 
 Set in `next.config.ts` for every route: `nosniff`, `SAMEORIGIN`,
 `strict-origin-when-cross-origin`, a `Permissions-Policy` that denies camera,

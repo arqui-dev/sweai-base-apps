@@ -4,6 +4,7 @@ import { campaignInput } from "@/features/newsletter/newsletter.schema";
 import { sendCampaign } from "@/features/newsletter/newsletter.service";
 import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
+import { logger } from "@/shared/logger";
 
 /** Constant-time compare so the token cannot be guessed byte by byte. */
 function tokenMatches(presented: string | null): boolean {
@@ -15,6 +16,7 @@ function tokenMatches(presented: string | null): boolean {
 
 export async function POST(request: Request): Promise<Response> {
   if (!tokenMatches(request.headers.get("authorization"))) {
+    logger.warn("admin token rejected", { route: "newsletter/send" });
     return json({ message: "Unauthorized." }, 401);
   }
 

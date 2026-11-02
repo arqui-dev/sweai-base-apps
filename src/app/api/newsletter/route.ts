@@ -3,9 +3,11 @@ import { subscribe } from "@/features/newsletter/newsletter.service";
 import { allow, clientKey } from "@/lib/rate-limit";
 import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
+import { logger } from "@/shared/logger";
 
 export async function POST(request: Request): Promise<Response> {
   if (!allow(clientKey(request, "newsletter"))) {
+    logger.warn("rate limit rejected", { scope: "newsletter" });
     return json({ message: "Too many requests. Try again in a minute." }, 429);
   }
 

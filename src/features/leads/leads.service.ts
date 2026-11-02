@@ -1,5 +1,6 @@
 import { MAIL_FROM, resend } from "@/lib/resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { escapeHtml } from "@/shared/escape-html";
 import { logger } from "@/shared/logger";
 import { reasonOf } from "@/shared/reason";
 import { type Result, err, ok } from "@/shared/result";
@@ -38,7 +39,10 @@ export async function captureLead(
       from: MAIL_FROM,
       to: input.email,
       subject: input.list === "waitlist" ? "You are on the waitlist" : "Early access confirmed",
-      html: `<p>Hi ${input.name ?? "there"},</p><p>You are number ${count ?? 1} on the ${input.list} list. We mail you when your slot opens.</p>`,
+      // Escaped: one unauthenticated request chooses both the recipient
+      // address and this name, so raw interpolation would let anyone mail
+      // arbitrary markup from our verified domain.
+      html: `<p>Hi ${escapeHtml(input.name ?? "there")},</p><p>You are number ${count ?? 1} on the ${escapeHtml(input.list)} list. We mail you when your slot opens.</p>`,
     })
     .catch((error: unknown) => {
       logger.error("lead confirmation mail failed", {

@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege, declared explicitly. The default for a repository can be
+# write-all, and this pipeline only ever needs to read the code (OWASP A03).
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -31,13 +36,16 @@ jobs:
       NEWSLETTER_SECRET: placeholder-newsletter-secret-32-chars
 
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
+      # Third-party actions are pinned by commit SHA. A tag is mutable and can
+      # be repointed after review (OWASP A03).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
 
+      # npm ci, never npm install: it fails when the lockfile and manifest
+      # disagree instead of silently resolving something new.
       - run: npm ci
 
       - name: Typecheck
@@ -52,23 +60,54 @@ jobs:
       - name: Build
         run: npm run build
 
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Zero tolerance on anything that can run in a request. `info` is the
+      # lowest threshold npm accepts, so any advisory at all fails the build.
+      - name: Audit runtime dependencies (zero tolerance)
+        run: npm audit --omit=dev --audit-level=info
+
+      # Reported, not gated. Build and editor tooling cannot be reached by a
+      # request, and the Sanity CLI kept for `sanity deploy` carries findings
+      # whose only npm-offered fix is a major downgrade. Driving this to zero
+      # is tracked in docs/ai-roadmap.md.
+      - name: Report build-time dependencies (non-blocking)
+        continue-on-error: true
+        run: npm audit
+
+      # Fails when package.json and the lockfile disagree, which is how an
+      # unreviewed dependency slips in.
+      - name: Lockfile matches the manifest
+        run: npm ci --ignore-scripts --dry-run
+
   secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       # The gitleaks CLI, not gitleaks-action: the action requires a paid
       # license for GitHub organizations, and the binary it wraps is MIT.
-      # Version pinned, because an unpinned scanner is a supply chain hole in
-      # the job whose whole purpose is finding supply chain holes.
+      # Version pinned and checksum verified, because an unverified download
+      # in the job that hunts supply chain holes is itself one.
       - name: Scan history for leaked credentials
         env:
           GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
         run: |
           curl -sSfL -o gitleaks.tar.gz \
             "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check --status
           tar -xzf gitleaks.tar.gz gitleaks
           ./gitleaks git . --config .gitleaks.toml --gitleaks-ignore-path .gitleaksignore \
             --redact --no-banner --exit-code 1

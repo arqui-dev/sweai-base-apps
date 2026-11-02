@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import { MAIL_FROM, resend } from "@/lib/resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { escapeHtml } from "@/shared/escape-html";
 import { logger } from "@/shared/logger";
 import { reasonOf } from "@/shared/reason";
 import { type Result, err, ok } from "@/shared/result";
@@ -69,7 +70,7 @@ async function sendWelcome(email: string, name?: string): Promise<void> {
     from: MAIL_FROM,
     to: email,
     subject: "You are on the list",
-    html: `<p>Hi ${name ?? "there"},</p>
+    html: `<p>Hi ${escapeHtml(name ?? "there")},</p>
 <p>Thanks for subscribing. New posts land in your inbox, nothing else.</p>
 <p>Premium posts unlock for the price of one coffee.</p>
 ${footer(leave)}`,

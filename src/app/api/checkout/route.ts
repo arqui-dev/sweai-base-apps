@@ -4,9 +4,11 @@ import { allow, clientKey } from "@/lib/rate-limit";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
+import { logger } from "@/shared/logger";
 
 export async function POST(request: Request): Promise<Response> {
   if (!allow(clientKey(request, "checkout"), 10)) {
+    logger.warn("rate limit rejected", { scope: "checkout" });
     return json({ message: "Too many requests. Try again in a minute." }, 429);
   }
 

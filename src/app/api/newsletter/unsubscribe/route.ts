@@ -3,6 +3,7 @@ import { unsubscribe } from "@/features/newsletter/unsubscribe";
 import { allow, clientKey } from "@/lib/rate-limit";
 import { setupHint } from "@/shared/config-check";
 import { json } from "@/shared/http";
+import { logger } from "@/shared/logger";
 
 const query = z.object({
   e: z.string().trim().toLowerCase().email().max(254),
@@ -19,6 +20,7 @@ const query = z.object({
  */
 export async function POST(request: Request): Promise<Response> {
   if (!allow(clientKey(request, "unsubscribe"), 20)) {
+    logger.warn("rate limit rejected", { scope: "unsubscribe" });
     return json({ message: "Too many requests. Try again in a minute." }, 429);
   }
 

@@ -1,0 +1,19 @@
+# A point-in-time audit only proves the tree was clean the day it ran. This is
+# the continuous half of the policy in docs/adr/ADR-007-dependency-and-vulnerability-policy.md.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the patch noise, individual PRs for anything that can break.
+      patch-and-minor:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -14,6 +14,7 @@ flowchart LR
   SEC --> S2[Secrets stay server-side]
   SEC --> S3[Payment amount is server-decided]
   SEC --> S4[Webhooks are signature-verified]
+  SEC --> S5[Zero runtime vulnerabilities]
 
   REU --> R1[New capture page needs no migration]
   REU --> R2[New theme needs no component change]
@@ -50,7 +51,10 @@ flowchart LR
 | S12 | Sanity is unreachable when a crawler requests the sitemap | 200 with the static paths, warning logged | `try`/`catch` in `src/app/sitemap.ts` |
 | S13 | `assertNoLeak` throws on a post render | The error boundary renders, never a partial post | `src/app/(site)/error.tsx` |
 | S14 | A theme is edited and a colour pair drops below AA | The test suite fails before the build | `themes.contrast.test.ts`, 51 measured pairs |
-| S15 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
+| S15 | A dependency with a known advisory is added | `npm audit --omit=dev --audit-level=info` fails the build | CI job `dependencies` |
+| S16 | An editor stores a `javascript:` link in a post | The href renders as `#` | `sanitize.test.ts`, seven hostile schemes |
+| S17 | Someone submits a name containing markup and a victim's address | The victim receives escaped text, not working markup | `sanitize.test.ts` |
+| S18 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
 
 ## What is not measured
 

@@ -2,6 +2,7 @@ import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/react";
 import Image from "next/image";
 import { imageUrl } from "@/lib/sanity";
+import { safeHref } from "@/shared/safe-url";
 import type { SanityImageSource } from "@sanity/image-url";
 
 const components: PortableTextComponents = {
@@ -27,7 +28,7 @@ const components: PortableTextComponents = {
     ),
     link: ({ children, value }) => (
       <a
-        href={String(value?.href ?? "#")}
+        href={safeHref(value?.href)}
         rel="noopener noreferrer nofollow"
         className="text-accent underline"
       >

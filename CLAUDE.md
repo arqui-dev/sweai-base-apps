@@ -66,6 +66,37 @@ placeholder means adding it there and here, in the same commit.
 `configured` map or a setup mistake in it will surface as a bare provider error
 instead.
 
+## Security and dependency policy
+
+Full version in [ADR-007](docs/adr/ADR-007-dependency-and-vulnerability-policy.md).
+Non-negotiable:
+
+- **Never accept a runtime vulnerability.** `npm run audit:runtime` gates on
+  `--audit-level=info`, so any advisory at all in the `--omit=dev` tree fails
+  the build. No triage step, no accepted-risk list. If there is no fix, remove
+  the dependency or drop the feature.
+- **Review every change against OWASP Top 10:2025 and ASVS 5.0** at the level
+  the change touches. Auth, authorization, money, and anything rendering
+  third-party content get it unconditionally. Invoke the `owasp-security`
+  skill; the `security-reviewer` agent that will automate this is item A1 in
+  [the roadmap](docs/ai-roadmap.md).
+- **The repo must keep passing its own scans:** `npm run verify`,
+  `npm run audit:runtime`, and the gitleaks history scan.
+- **Fewest dependencies, but never hand-roll** cryptography, TLS, payment
+  handling, auth token formats, or an HTML sanitizer for untrusted documents.
+  Climb the ladder first: already in the tree, then Node built-ins
+  (`node:crypto` gave us HMAC and constant-time compare), then a platform
+  feature, then a few lines here, then install.
+- **Document every dependency you add** with a row in
+  [`docs/dependencies.md`](docs/dependencies.md): what it is for, what it
+  replaced, its transitive count, and which ladder rung it cleared. Same commit
+  as the install. A dependency without a row is a review failure.
+- **Deep-scan before committing an install:** maintainers, first-publish date,
+  install scripts, transitive count, advisories. Commands are in ADR-007
+  section 5. Reject on an unexplained install script, a days-old package, a
+  recent maintainer change, a typosquat-adjacent name, or a git dependency on a
+  branch rather than a commit SHA.
+
 ## Forbidden patterns
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
@@ -97,6 +128,13 @@ instead.
   drag the Sanity CLI into the production tree, which is 21 audit findings and
   the reason the Studio is hosted ([ADR-006](docs/adr/ADR-006-hosted-sanity-studio.md)).
   Content is read with `@sanity/client`.
+- No unescaped interpolation into an outbound email body. Use `escapeHtml`: one
+  unauthenticated request picks both the recipient and the name.
+- No `href` from the CMS or any request rendered without `safeHref`. React does
+  not block `javascript:` URLs.
+- No unlogged security event. A rate-limit rejection, a rejected admin token
+  and a failed code exchange each log at `warn`.
+- No new dependency without a row in `docs/dependencies.md`.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification
@@ -106,8 +144,10 @@ gate and CI runs all four. Claiming work is done without running them is a
 process violation, not an optimism problem.
 
 ```bash
-npm run verify
+npm run verify         # typecheck + lint + test
 npm run build
+npm run audit:runtime  # gated: any advisory fails
+npm run audit:all      # reported: build-time tooling, not gated
 npm run scan:secrets   # needs the gitleaks binary; CI is the enforcing gate
 ```
 
@@ -128,6 +168,9 @@ commands in this repo.
 | `capture-page-builder` | A new waitlist, lead list, or signup page |
 | `arc42-keeper` | After any change that alters the architecture the docs describe |
 | `release-checker` | Before a production deploy |
+
+Agents still to build are in [`docs/ai-roadmap.md`](docs/ai-roadmap.md), highest
+priority first. `security-reviewer` and `dependency-reviewer` are next.
 
 ## MCP servers in use
 

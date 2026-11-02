@@ -14,15 +14,21 @@ that first.
 | Why it is built this way | [docs/adr/](docs/adr/) |
 | What it must never do | [CLAUDE.md](CLAUDE.md), "Forbidden patterns" |
 | What is deliberately unfinished | [docs/arc42/11-risks-and-technical-debt.md](docs/arc42/11-risks-and-technical-debt.md) |
+| Security and dependency policy | [docs/adr/ADR-007-dependency-and-vulnerability-policy.md](docs/adr/ADR-007-dependency-and-vulnerability-policy.md) |
+| Why each library is here | [docs/dependencies.md](docs/dependencies.md) |
+| Agents and checks still to build | [docs/ai-roadmap.md](docs/ai-roadmap.md) |
 
 ## Non-negotiable
 
-1. Run `npm run verify && npm run build` before claiming anything works.
+1. Run `npm run verify && npm run build && npm run audit:runtime` before
+   claiming anything works.
 2. Never widen the paywall or an RLS policy without running `paywall-guardian`
    and `rls-reviewer`.
 3. Deliberate shortcuts carry a `ponytail:` comment naming the ceiling and the
    upgrade path. Do not remove one without removing the shortcut.
-4. Prose follows `../ai-software-engineering/guidelines/writing-style.md`. No em
+4. Never accept a runtime vulnerability, and never add a dependency without a
+   row in `docs/dependencies.md`. See ADR-007.
+5. Prose follows `../ai-software-engineering/guidelines/writing-style.md`. No em
    dashes, active voice, numbers instead of adjectives.
 
 <!-- BEGIN:nextjs-agent-rules -->
