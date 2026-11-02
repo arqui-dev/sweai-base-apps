@@ -53,7 +53,7 @@ Plus `not-found` and an error boundary for the site shell, `robots.txt`, and a
 ## Themes
 
 Five presets: `minimalist`, `modern`, `brutalist`, `editorial`, `terminal`.
-Compare them at [`/themes`](src/app/(site)/themes/page.tsx) or switch with the
+Compare them at `/themes` or switch with the
 control in the header. Each one is a block of fifteen CSS custom properties in
 `src/app/themes.css`, so no component knows which is active, and adding a sixth
 is one CSS block plus one array entry.
