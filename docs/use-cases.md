@@ -131,9 +131,9 @@ flowchart LR
 | | |
 |---|---|
 | Actor | Editor |
-| Trigger | Publish in `/studio` |
-| Implementation | `sanity/schema/post.ts`, 60 second revalidate on the list and detail queries |
-| Outcome | Post appears within a minute, with no deploy |
+| Trigger | Publish in the Sanity-hosted Studio |
+| Implementation | `sanity/schema/post.ts` deployed with `npx sanity deploy`, 60 second revalidate on the list and detail queries |
+| Outcome | Post appears within a minute, with no deploy of this application |
 | Designed failure | Publishing a premium post with no excerpt, leaving an empty teaser. `excerpt` is a required field with a 300 character cap |
 | Checked by | Sanity schema validation |
 

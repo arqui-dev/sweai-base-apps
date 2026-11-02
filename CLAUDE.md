@@ -16,13 +16,14 @@ to Hire Service.
 
 Hire Service is a study base, not a product. It is a Next.js 16 application on
 Vercel wired to Supabase (auth and Postgres), Stripe (one-off payments), Sanity
-(content), and Resend (email), documented with arc42 and Mermaid C4 diagrams in
-`docs/arc42/`. The demonstration product is a consulting landing page with a
+(content, with the Studio hosted by Sanity), and Resend (email), documented
+with arc42 and Mermaid C4 diagrams in `docs/arc42/`. The demonstration product is a consulting landing page with a
 blog, a coffee-sized paywall, a newsletter, and two lead lists.
 
 It owns: the web application, its route handlers, the database schema in
 `supabase/schema.sql`, the content schema in `sanity/schema/`, and all five
-themes.
+themes. The Studio is built from `sanity.config.ts` and published separately
+with `npx sanity deploy`; it is not a route on this domain.
 
 It does not own: identity, payment processing, content storage, or mail
 delivery. Those are managed services, and the correct fix for a problem in one
@@ -92,6 +93,10 @@ instead.
   which does *not* look like a placeholder assembles it at runtime, as
   `src/shared/config-check.test.ts` does. Never paste a real credential into a
   test, not even a truncated one.
+- No `next-sanity`, and no `sanity` or `@sanity/vision` in `dependencies`. They
+  drag the Sanity CLI into the production tree, which is 21 audit findings and
+  the reason the Studio is hosted ([ADR-006](docs/adr/ADR-006-hosted-sanity-studio.md)).
+  Content is read with `@sanity/client`.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification

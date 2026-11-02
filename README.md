@@ -11,7 +11,7 @@ chosen because it exercises every integration at least once.
 Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
   Supabase   auth (magic link) + Postgres with row level security
   Stripe     hosted Checkout, one-off payment, signed webhook
-  Sanity     headless CMS, Studio embedded at /studio
+  Sanity     headless CMS, Studio hosted by Sanity (npx sanity deploy)
   Resend     welcome, confirmation and campaign email
   Vercel     preview per pull request, production on main
 ```
@@ -33,10 +33,11 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `/profile` | Email, premium state, newsletter state, sign out |
 | `/unsubscribe` | Signed one-click unsubscribe, reached from a mail footer |
 | `/success` | Post-payment landing |
-| `/studio` | Sanity Studio |
 
 Plus `not-found` and an error boundary for the site shell, `robots.txt`, and a
-`sitemap.xml` built from the published posts.
+`sitemap.xml` built from the published posts. The Studio is not a route here:
+it is hosted by Sanity, and the footer links to it when
+`NEXT_PUBLIC_SANITY_STUDIO_URL` is set.
 
 ## API
 
@@ -86,7 +87,14 @@ Then:
    tables and enables row level security on all of them.
 2. Add `http://localhost:3000/auth/callback` to the Supabase allowed redirect
    URLs.
-3. Create a post at `/studio`. Toggle **Premium** to see the paywall.
+3. Publish the Studio and create a post. The schema lives in `sanity/schema/`,
+   so deploying it is one command:
+   ```bash
+   npx sanity deploy          # prints the hosted Studio URL
+   ```
+   Put that URL in `NEXT_PUBLIC_SANITY_STUDIO_URL`, then create a post and
+   toggle **Premium** to see the paywall. Re-run `sanity deploy` after any
+   schema change.
 4. Forward the Stripe webhook locally:
    `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 
@@ -119,7 +127,6 @@ src/
     (site)/            pages, wrapped in the nav and footer shell
     api/               route handlers: HTTP concerns only
     auth/              magic-link callback and sign out
-    studio/            Sanity Studio, outside the site shell
     globals.css        Tailwind tokens mapped from theme variables
     themes.css         the five theme blocks
     robots.ts          disallows the editor, personal and write routes
@@ -131,9 +138,9 @@ src/
   env.ts               the only reader of secret env vars
   proxy.ts             session refresh, protected-route redirect (was middleware.ts)
 supabase/schema.sql    four tables, five policies, one trigger
-sanity/schema/         the post document type
+sanity/schema/         the post document type, deployed with `npx sanity deploy`
 docs/arc42/            architecture, twelve sections, Mermaid C4
-docs/adr/              five decision records
+docs/adr/              six decision records
 docs/personas.md       five personas and the decisions made for them
 docs/use-cases.md      thirteen use cases with their designed failure
 .claude/agents/        six project agents
@@ -148,6 +155,15 @@ docs/use-cases.md      thirteen use cases with their designed failure
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings
   and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
+
+## Dependencies
+
+`npm audit --omit=dev` reports zero vulnerabilities. Keeping it that way is why
+the Studio is hosted rather than embedded: `next-sanity` depends on the
+`sanity` editor package in production, which pulls the Sanity CLI and a Vite
+plugin tree with 21 findings, 3 of them high. None was reachable from a
+request, but an audit that always reports high findings is an audit nobody
+reads. See [ADR-006](docs/adr/ADR-006-hosted-sanity-studio.md).
 
 ## What this is not
 

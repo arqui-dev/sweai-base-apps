@@ -5,6 +5,7 @@ import { listPosts } from "@/features/posts/posts.queries";
 import type { PostSummary } from "@/features/posts/posts.types";
 import { formatMoney } from "@/lib/money";
 import { COFFEE } from "@/lib/stripe";
+import { publicEnv } from "@/env.public";
 import { logger } from "@/shared/logger";
 import { reasonOf } from "@/shared/reason";
 
@@ -66,12 +67,20 @@ async function PostList() {
 
       {!loadFailed && posts.length === 0 && (
         <p className={card()}>
-          No posts yet. Create one in the{" "}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/studio" className="text-accent underline">
-            Studio
-          </a>
-          .
+          No posts yet. Create one in{" "}
+          {publicEnv.NEXT_PUBLIC_SANITY_STUDIO_URL ? (
+            <a
+              href={publicEnv.NEXT_PUBLIC_SANITY_STUDIO_URL}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-accent underline"
+            >
+              the Studio
+            </a>
+          ) : (
+            "the Sanity Studio"
+          )}
+          , then deploy it with <code className="font-mono">npx sanity deploy</code>.
         </p>
       )}
 

@@ -51,10 +51,10 @@ typo.
 
 | | |
 |---|---|
-| Arrives at | `/studio` |
+| Arrives at | The Sanity-hosted Studio, linked from the footer |
 | Wants | To publish, and to mark a post premium with one switch |
 | Will not tolerate | Needing a deploy to change a sentence |
-| Serve him with | Sanity Studio in the app, `isPremium` as a boolean field, a required `excerpt` so every locked post has a teaser, and 60 second revalidation so a fix appears without a build |
+| Serve him with | A Studio whose schema is version controlled here, `isPremium` as a boolean field, a required `excerpt` so every locked post has a teaser, and 60 second revalidation so a fix appears without a build |
 | Served when | He publishes without talking to anyone |
 
 ## P5: Alex, the next engineer

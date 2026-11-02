@@ -13,7 +13,6 @@ C4Container
     Container(web, "Site", "Next.js App Router, React Server Components", "Landing, blog, paywall, profile, capture forms, cart")
     Container(api, "Route handlers", "Next.js, Node 22", "Newsletter, leads, checkout, Stripe webhook, campaign send, auth callback")
     Container(mw, "Proxy", "Next.js proxy (src/proxy.ts)", "Refreshes the Supabase session cookie, redirects anonymous users off /profile")
-    Container(studio, "Sanity Studio", "React, client-only bundle", "Content editing at /studio")
   }
 
   System_Boundary(supa, "Supabase project") {
@@ -23,10 +22,11 @@ C4Container
 
   System_Ext(stripe, "Stripe Checkout")
   System_Ext(sanityapi, "Sanity content API")
+  System_Ext(studio, "Sanity-hosted Studio")
   System_Ext(resend, "Resend")
 
   Rel(reader, web, "HTTPS")
-  Rel(editor, studio, "HTTPS")
+  Rel(editor, studio, "HTTPS, separate domain")
   Rel(web, api, "fetch from client components")
   Rel(mw, auth, "Refresh session")
   Rel(web, auth, "getUser()")

@@ -1,4 +1,4 @@
-import { groq } from "next-sanity";
+import groq from "groq";
 import { sanityClient } from "@/lib/sanity";
 import { isLocked } from "./posts.gate";
 import type { Post, PostSummary } from "./posts.types";

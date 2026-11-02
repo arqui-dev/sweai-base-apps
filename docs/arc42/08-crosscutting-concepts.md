@@ -156,9 +156,10 @@ Section 11 records that cost.
 
 ## 8.10 Crawlers
 
-`src/app/robots.ts` disallows `/api/`, `/auth/`, `/studio`, `/profile`,
-`/unsubscribe` and `/success`. The editor and the personal pages have no
-business in a search index, and `/unsubscribe` carries a signed token.
+`src/app/robots.ts` disallows `/api/`, `/auth/`, `/profile`, `/unsubscribe` and
+`/success`. The personal pages have no business in a search index, and
+`/unsubscribe` carries a signed token. The Studio needs no rule because it is
+hosted by Sanity on its own domain.
 
 `src/app/sitemap.ts` lists the static paths plus every published post, premium
 ones included: titles and excerpts are public, and only the body is gated. A

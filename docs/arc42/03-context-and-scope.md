@@ -11,16 +11,16 @@ C4Context
   Person(editor, "Editor", "Writes and publishes posts")
   Person(owner, "Owner", "Sends campaigns, reads leads")
 
-  System(app, "Hire Service", "Next.js application on Vercel: landing page, blog, paywall, capture forms, embedded Studio")
+  System(app, "Hire Service", "Next.js application on Vercel: landing page, blog, paywall, capture forms")
 
   System_Ext(supabase, "Supabase", "Auth and Postgres with row level security")
   System_Ext(stripe, "Stripe", "Hosted Checkout and payment webhooks")
-  System_Ext(sanity, "Sanity", "Headless CMS and content API")
+  System_Ext(sanity, "Sanity", "Headless CMS, content API and hosted Studio")
   System_Ext(resend, "Resend", "Transactional and campaign email")
 
   Rel(visitor, app, "Browses, pays for a coffee", "HTTPS")
   Rel(subscriber, app, "Signs in, reads premium posts", "HTTPS")
-  Rel(editor, app, "Edits content at /studio", "HTTPS")
+  Rel(editor, sanity, "Edits content in the hosted Studio", "HTTPS")
   Rel(owner, app, "POST /api/newsletter/send", "HTTPS + admin token")
 
   Rel(app, supabase, "Magic-link auth, subscriber and lead writes, entitlement reads", "HTTPS")
@@ -37,7 +37,8 @@ C4Context
 Reading free and premium posts, one-off payment for premium access, magic-link
 sign in, a profile page showing access and subscription state, newsletter
 subscribe, signed unsubscribe and campaign send, two lead lists, a
-single-line-item cart, five themes, and the embedded Sanity Studio.
+single-line-item cart, and five themes. Content editing happens in the
+Sanity-hosted Studio, built from the schema in this repository.
 
 ## Out of scope
 
@@ -57,6 +58,6 @@ likely next and what triggers each.
 | In | `POST /api/newsletter/send` | `{ subject, html, limit? }`, bearer `ADMIN_API_TOKEN`, compared in constant time |
 | In | `GET /auth/callback` | Supabase magic-link code, redirects to a same-origin path only |
 | Out | Supabase REST and Auth | `@supabase/ssr` and `@supabase/supabase-js` |
-| Out | Sanity content API | GROQ over `next-sanity`, 60 second revalidate |
+| Out | Sanity content API | GROQ over `@sanity/client`, 60 second revalidate |
 | Out | Stripe API | Checkout Sessions, API version pinned in `src/lib/stripe.ts` |
 | Out | Resend API | `emails.send` and `batch.send`, up to 100 per batch |

@@ -17,7 +17,7 @@ flowchart TB
     prod["Production deployment<br/>main branch"]
     edge["Proxy<br/>session refresh"]
     fn["Route handlers<br/>Node 22 functions"]
-    stat["Static assets and /studio bundle"]
+    stat["Static assets"]
   end
 
   gh -->|Git integration| prev
@@ -28,7 +28,7 @@ flowchart TB
 
   subgraph EXT["Managed services"]
     sb[("Supabase<br/>Auth + Postgres")]
-    san[("Sanity<br/>content API")]
+    san[("Sanity<br/>content API + hosted Studio")]
     st[("Stripe<br/>Checkout")]
     rs[("Resend<br/>email")]
   end
@@ -74,7 +74,9 @@ supabase db push
 
 # 2. Content
 npx sanity dataset create production   # once per project
-npm run dev                            # then create a post at /studio
+npx sanity deploy                      # publishes the Studio, prints its URL
+#    Put that URL in NEXT_PUBLIC_SANITY_STUDIO_URL, then create a post.
+#    Re-run `sanity deploy` after any change to sanity/schema/.
 
 # 3. Payments: point a Stripe webhook at the deployment
 stripe listen --forward-to localhost:3000/api/stripe/webhook   # local

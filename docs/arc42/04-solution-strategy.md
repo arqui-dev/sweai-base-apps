@@ -14,7 +14,7 @@ Five decisions shaped everything else. Each has an ADR in section 9.
 
 The base deliberately does not have: a state management library, a component
 library, a form library, an ORM, a service layer in front of Supabase, a DTO
-mapping layer, a cart store, or a custom logger. Each was considered and each
+mapping layer, a cart store, a custom logger, or `next-sanity`. Each was considered and each
 lost to something already present: React state, Tailwind, native form
 validation, the Supabase client, `Result<T, E>`, and `console` plus Vercel's log
 drain.

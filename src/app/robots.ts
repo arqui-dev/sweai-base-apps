@@ -9,9 +9,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Editor, personal pages and write endpoints. None of them should ever
-        // appear in a search result, and /unsubscribe carries a signed token.
-        disallow: ["/api/", "/auth/", "/studio", "/profile", "/unsubscribe", "/success"],
+        // Personal pages and write endpoints. None of them should ever appear
+        // in a search result, and /unsubscribe carries a signed token. The
+        // Studio is hosted by Sanity and is not a route on this domain.
+        disallow: ["/api/", "/auth/", "/profile", "/unsubscribe", "/success"],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

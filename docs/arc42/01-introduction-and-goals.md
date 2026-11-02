@@ -29,5 +29,5 @@ Ordered. When two conflict, the higher one wins.
 | Owner and sole engineer | To copy this repo and have the next product's plumbing already done |
 | Reader | Posts that load fast and a payment that takes two clicks |
 | Paying reader | Access that survives signing up after paying |
-| Content editor | To publish without a deploy |
+| Content editor | To publish without a deploy of the application |
 | AI coding agent | Enough written context to make the hundred small calls the way the owner would |

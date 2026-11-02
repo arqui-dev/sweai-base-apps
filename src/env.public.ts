@@ -17,7 +17,15 @@ const publicSchema = z.object({
     }),
   NEXT_PUBLIC_SANITY_PROJECT_ID: z.string().min(1),
   NEXT_PUBLIC_SANITY_DATASET: z.string().min(1).default("production"),
+  /**
+   * Hosted Studio address, e.g. https://arqui-dev.sanity.studio. Optional
+   * because the hostname is chosen at `sanity deploy` time and cannot be
+   * derived from the project id. The footer link only renders when it is set.
+   */
+  NEXT_PUBLIC_SANITY_STUDIO_URL: z.string().url().optional(),
 });
+
+const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL;
 
 const parsed = publicSchema.safeParse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -25,6 +33,7 @@ const parsed = publicSchema.safeParse({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  ...(studioUrl ? { NEXT_PUBLIC_SANITY_STUDIO_URL: studioUrl } : {}),
 });
 
 if (!parsed.success) {

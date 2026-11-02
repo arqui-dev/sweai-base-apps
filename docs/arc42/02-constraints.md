@@ -14,7 +14,7 @@ in section 9 do not revisit them.
 | Tailwind CSS v4 for all styling | Tokens live in `@theme`, no CSS-in-JS in product code |
 | Supabase for identity and relational data | Row level security is the authorization layer, not application `if` statements |
 | Stripe for payment | No card data touches this application at all |
-| Sanity for content | Posts are not in Postgres, and the blog has no database migration |
+| Sanity for content | Posts are not in Postgres, the blog has no database migration, and the Studio is hosted by Sanity rather than embedded ([ADR-006](../adr/ADR-006-hosted-sanity-studio.md)) |
 | Resend for email | No SMTP credentials, no mail server |
 
 ## Organizational
