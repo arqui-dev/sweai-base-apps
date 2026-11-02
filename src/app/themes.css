@@ -1,6 +1,18 @@
 /*
  * Theme tokens. Every component styles itself from these variables only, so a
  * theme switch is a single attribute change on <html> with no re-render.
+ *
+ * Every colour pair here is measured against WCAG 2.2 AA by
+ * `themes.contrast.test.ts`, which parses this file. Changing a value without
+ * running the tests will fail the build, not the user.
+ *
+ * `--border` draws decorative rules and card edges, which carry no contrast
+ * requirement. `--field-border` draws the only visible boundary of a text
+ * input, which does: success criterion 1.4.11 asks for 3:1 against both the
+ * field background and the surface the field sits on. That is why they are two
+ * tokens and not one. Modern's accent is a light indigo with near-black label
+ * text because no mid-indigo can clear 4.5:1 against a near-black page and
+ * carry white text at the same time.
  */
 
 :root,
@@ -12,6 +24,7 @@
   --accent: #2563eb;
   --accent-ink: #ffffff;
   --border: #e4e4e7;
+  --field-border: #90909c;
   --radius: 0.25rem;
   --border-width: 1px;
   --shadow: none;
@@ -27,12 +40,13 @@
   --surface: #18181b;
   --ink: #fafafa;
   --muted: #a1a1aa;
-  --accent: #6366f1;
-  --accent-ink: #ffffff;
+  --accent: #a5b4fc;
+  --accent-ink: #09090b;
   --border: #27272a;
+  --field-border: #64646c;
   --radius: 1rem;
   --border-width: 1px;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -8px rgb(99 102 241 / 0.35);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -8px rgb(165 180 252 / 0.3);
   --display-family: var(--font-geist-sans);
   --body-family: var(--font-geist-sans);
   --display-weight: 700;
@@ -45,9 +59,10 @@
   --surface: #ffffff;
   --ink: #000000;
   --muted: #3f3f46;
-  --accent: #ff3b00;
+  --accent: #d63200;
   --accent-ink: #ffffff;
   --border: #000000;
+  --field-border: #000000;
   --radius: 0rem;
   --border-width: 3px;
   --shadow: 6px 6px 0 0 #000000;
@@ -62,10 +77,11 @@
   --bg: #faf6ef;
   --surface: #fffdf8;
   --ink: #1c1917;
-  --muted: #78716c;
+  --muted: #77706b;
   --accent: #b91c1c;
   --accent-ink: #fffdf8;
   --border: #e7e0d4;
+  --field-border: #a58b5e;
   --radius: 0.125rem;
   --border-width: 1px;
   --shadow: 0 1px 0 0 #e7e0d4;
@@ -80,10 +96,11 @@
   --bg: #0b0f0b;
   --surface: #111811;
   --ink: #3ef07c;
-  --muted: #2b8f4f;
+  --muted: #2c9150;
   --accent: #3ef07c;
   --accent-ink: #0b0f0b;
   --border: #1f3a26;
+  --field-border: #3b6e48;
   --radius: 0rem;
   --border-width: 1px;
   --shadow: none;

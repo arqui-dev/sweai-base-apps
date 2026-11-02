@@ -99,7 +99,7 @@ reference only the Tailwind tokens mapped from those properties in
 
 | Step | Where |
 |------|-------|
-| Define tokens | `src/app/themes.css`, one `[data-theme="..."]` block |
+| Define tokens | `src/app/themes.css`, one `[data-theme="..."]` block of 16 tokens |
 | Register the preset | `THEMES` in `src/components/theme/themes.ts` |
 | Render the active theme | `data-theme` on `<html>` in the root layout, read from a cookie |
 | Switch | `applyTheme` in `src/components/theme/apply-theme.ts`, called by the header switcher and the gallery |
@@ -113,6 +113,16 @@ Theme selectors are `[data-theme="..."]`, not `html[data-theme="..."]`. That is
 deliberate: it lets `/themes` put the attribute on a preview wrapper and render
 every preset live on one page, using the same components, with no iframe and no
 duplicated markup.
+
+Contrast is a test, not a review note. `src/app/themes.contrast.test.ts` parses
+`themes.css` and measures every pair against WCAG 2.2 AA: 4.5:1 for text,
+3:1 for `--field-border`, which draws a text input's only visible boundary and
+so falls under success criterion 1.4.11. `--border` draws decorative rules and
+carries no requirement, which is why they are two tokens.
+
+The five palettes shipped once with ten pairs below AA, including a primary
+action button at 3.35:1, and nothing caught it. That is why the check is
+automated now.
 
 Adding a sixth theme is one CSS block and one array entry. No component
 changes, and no new class names.

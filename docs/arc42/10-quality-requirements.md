@@ -28,6 +28,7 @@ flowchart LR
 
   A11Y --> A1[Every input has a label]
   A11Y --> A2[Focus is visible in all five themes]
+  A11Y --> A4[Every colour pair meets WCAG AA]
   A11Y --> A3[Reduced motion is respected]
 ```
 
@@ -48,7 +49,8 @@ flowchart LR
 | S11 | Someone posts an unsubscribe for a guessed address with no token | 403, nothing written | `unsubscribe.test.ts` |
 | S12 | Sanity is unreachable when a crawler requests the sitemap | 200 with the static paths, warning logged | `try`/`catch` in `src/app/sitemap.ts` |
 | S13 | `assertNoLeak` throws on a post render | The error boundary renders, never a partial post | `src/app/(site)/error.tsx` |
-| S14 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
+| S14 | A theme is edited and a colour pair drops below AA | The test suite fails before the build | `themes.contrast.test.ts`, 51 measured pairs |
+| S15 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
 
 ## What is not measured
 

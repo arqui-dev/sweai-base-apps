@@ -21,9 +21,13 @@ instead, and that token goes into all five existing blocks.
 Every block defines all eleven, with no exceptions and no fallbacks:
 
 `--bg`, `--surface`, `--ink`, `--muted`, `--accent`, `--accent-ink`,
-`--border`, `--radius`, `--border-width`, `--shadow`, and the type trio
-`--display-family`, `--body-family`, `--display-weight`,
+`--border`, `--field-border`, `--radius`, `--border-width`, `--shadow`, and the
+type group `--display-family`, `--body-family`, `--display-weight`,
 `--display-transform`, `--display-tracking`.
+
+`--border` draws decorative rules and has no contrast requirement.
+`--field-border` draws a text input's only visible boundary and needs 3:1
+against both `--bg` and `--surface`, per WCAG 1.4.11. Do not collapse them.
 
 A missing token inherits from `:root`, which silently makes the new theme look
 like `minimalist` in that one respect. Check by diffing property names:
@@ -38,8 +42,12 @@ Every token name must appear the same number of times as there are themes.
 
 - A theme differs in tokens, never in markup. Different markup is a different
   product.
-- `--ink` on `--bg` and `--accent-ink` on `--accent` must both clear WCAG AA at
-  body size. State the measured ratios in your report.
+- Contrast is enforced by `src/app/themes.contrast.test.ts`, which parses
+  `themes.css` and measures every pair. Run `npm run test` and paste the
+  measured ratios into your report; do not eyeball them.
+- A light page with a mid-tone accent cannot always carry white label text. If
+  `--accent-ink` on `--accent` fails, change `--accent-ink` to the page ink
+  rather than fighting the accent, which is what `modern` does.
 - A new font family needs a `next/font` import in `src/app/layout.tsx` exposing
   a CSS variable. That is the one component-adjacent edit allowed.
 - No `@media (prefers-color-scheme)` inside a theme block. The theme is the

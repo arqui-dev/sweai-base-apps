@@ -20,7 +20,9 @@ export const card = (): string =>
 export const input = (): string =>
   [
     "w-full px-4 py-2.5 text-sm bg-bg text-ink placeholder:text-muted",
-    "border-(length:--border-width) border-border rounded-(--radius)",
+    // field-border, not border: a text input's edge is its only visual
+    // boundary, so WCAG 1.4.11 wants 3:1 where a card rule needs nothing.
+    "border-(length:--border-width) border-field-border rounded-(--radius)",
   ].join(" ");
 
 export const label = (): string => "block text-xs font-medium text-muted mb-1.5";

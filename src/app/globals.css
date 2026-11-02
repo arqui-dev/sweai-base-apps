@@ -9,6 +9,7 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-border: var(--border);
+  --color-field-border: var(--field-border);
 
   --radius-token: var(--radius);
   --shadow-token: var(--shadow);
