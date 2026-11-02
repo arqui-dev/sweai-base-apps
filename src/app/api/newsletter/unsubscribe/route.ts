@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { unsubscribe } from "@/features/newsletter/unsubscribe";
 import { allow, clientKey } from "@/lib/rate-limit";
+import { setupHint } from "@/shared/config-check";
 import { json } from "@/shared/http";
 
 const query = z.object({
@@ -31,7 +32,7 @@ export async function POST(request: Request): Promise<Response> {
     if (result.error === "BAD_TOKEN") {
       return json({ message: "That unsubscribe link is not valid." }, 403);
     }
-    return json({ message: "Could not update your subscription." }, 503);
+    return json({ message: "Could not update your subscription.", hint: setupHint() }, 503);
   }
 
   return json({

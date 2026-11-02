@@ -2,6 +2,7 @@ import { createCheckoutSession } from "@/features/payments/checkout.service";
 import { checkoutInput } from "@/features/payments/payments.schema";
 import { allow, clientKey } from "@/lib/rate-limit";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
 
 export async function POST(request: Request): Promise<Response> {
@@ -24,7 +25,7 @@ export async function POST(request: Request): Promise<Response> {
     if (result.error === "NO_SUBJECT") {
       return json({ message: "Sign in or give us an email to send the receipt to." }, 400);
     }
-    return json({ message: "Payment provider unavailable." }, 503);
+    return json({ message: "Payment provider unavailable.", hint: setupHint() }, 503);
   }
 
   return json(result.value);

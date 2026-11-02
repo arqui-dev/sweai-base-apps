@@ -72,7 +72,13 @@ npm run dev
 
 The repository ships a `.env.local` with placeholders so `npm run build` works
 before any account exists. Replace them with real values before using a
-feature.
+feature. Until you do, every write endpoint answers 503 with a `hint` naming
+the variables still unset, so a half-finished setup diagnoses itself:
+
+```json
+{ "message": "Could not save your address.",
+  "hint": "Setup incomplete. Still placeholders in .env.local: SUPABASE_SECRET_KEY, ..." }
+```
 
 Then:
 
@@ -116,7 +122,7 @@ src/
     sitemap.ts         static paths plus every published post
   features/            the rules: schemas, services, the paywall gate
   lib/                 one configured client per external service
-  shared/              Result, logger, request body parsing
+  shared/              Result, logger, request body parsing, setup diagnostics
   components/          presentation, no business logic
   env.ts               the only reader of secret env vars
   proxy.ts             session refresh, protected-route redirect (was middleware.ts)

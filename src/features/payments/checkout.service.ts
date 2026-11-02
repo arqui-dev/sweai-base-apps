@@ -2,6 +2,7 @@ import { COFFEE, stripe } from "@/lib/stripe";
 import { publicEnv } from "@/env.public";
 import { type Result, err, ok } from "@/shared/result";
 import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 import type { CheckoutInput } from "./payments.schema";
 
 export type CheckoutError = "NO_SUBJECT" | "STRIPE_ERROR";
@@ -55,7 +56,7 @@ export async function createCheckoutSession(
     return ok({ url: session.url });
   } catch (error: unknown) {
     logger.error("checkout session create failed", {
-      reason: error instanceof Error ? error.message : String(error),
+      reason: reasonOf(error),
     });
     return err("STRIPE_ERROR");
   }

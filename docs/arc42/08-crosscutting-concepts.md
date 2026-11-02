@@ -70,6 +70,16 @@ Every `catch` either returns `err(...)`, logs, or rethrows. The two
 deliberately swallowed cases are both mail sends, and both log before
 continuing, because the user's data is already stored.
 
+Pages that degrade rather than fail, the landing page, `/blog` and `/coffee`,
+all log the reason before falling back. They did not at first, and the result
+was that a misconfigured Sanity project produced a working-looking page with no
+trace of why it was empty.
+
+A 503 from a write endpoint carries a `hint` naming any environment variable
+still holding a placeholder, built by `src/shared/config-check.ts`. Production
+returns no hint: naming a misconfigured variable to an anonymous caller hands
+an attacker a map of what is broken.
+
 ## 8.6 Logging
 
 One JSON line per event, written to stdout, collected by Vercel. No log

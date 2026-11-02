@@ -10,10 +10,15 @@ import { formatMoney } from "@/lib/money";
 import { imageUrl } from "@/lib/sanity";
 import { COFFEE } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
-  const post = await getPost(slug, false).catch(() => null);
+  const post = await getPost(slug, false).catch((error: unknown) => {
+    logger.warn("post metadata query failed", { slug, reason: reasonOf(error) });
+    return null;
+  });
   if (!post) return { title: "Post not found" };
   return { title: post.title, description: post.excerpt };
 }

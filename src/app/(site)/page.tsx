@@ -7,6 +7,8 @@ import { listPosts } from "@/features/posts/posts.queries";
 import { COFFEE } from "@/lib/stripe";
 import { formatMoney } from "@/lib/money";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 import type { PostSummary } from "@/features/posts/posts.types";
 
 const SERVICES = [
@@ -33,7 +35,8 @@ export default async function LandingPage() {
   let posts: readonly PostSummary[] = [];
   try {
     posts = (await listPosts(3)).slice(0, 3);
-  } catch {
+  } catch (error: unknown) {
+    logger.warn("landing post query failed", { reason: reasonOf(error) });
     posts = [];
   }
 

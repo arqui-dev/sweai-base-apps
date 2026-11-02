@@ -6,6 +6,8 @@ import { listPosts } from "@/features/posts/posts.queries";
 import { formatMoney } from "@/lib/money";
 import { COFFEE } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 
 export const metadata = {
   title: "Buy me a coffee",
@@ -28,7 +30,8 @@ export default async function CoffeePage() {
   let premiumCount = 0;
   try {
     premiumCount = (await listPosts(50)).filter((post) => post.isPremium).length;
-  } catch {
+  } catch (error: unknown) {
+    logger.warn("coffee page post count failed", { reason: reasonOf(error) });
     premiumCount = 0;
   }
 

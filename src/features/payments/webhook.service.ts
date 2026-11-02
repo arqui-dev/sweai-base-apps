@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { env } from "@/env";
 import { stripe } from "@/lib/stripe";
 import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 import { type Result, err, ok } from "@/shared/result";
 import { grantPremium } from "./entitlements.service";
 
@@ -22,7 +23,7 @@ export async function handleStripeWebhook(
     event = stripe.webhooks.constructEvent(rawBody, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (error: unknown) {
     logger.warn("stripe signature rejected", {
-      reason: error instanceof Error ? error.message : String(error),
+      reason: reasonOf(error),
     });
     return err("BAD_SIGNATURE");
   }

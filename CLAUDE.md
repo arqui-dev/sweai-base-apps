@@ -60,6 +60,11 @@ These values are allowlisted in `.gitleaks.toml` by value, never by path, so a
 real credential committed to the same file still fails the scan. Adding a new
 placeholder means adding it there and here, in the same commit.
 
+`src/shared/config-check.ts` detects them at request time and names them in the
+`hint` field of a 503, outside production only. Add a new credential to its
+`configured` map or a setup mistake in it will surface as a bare provider error
+instead.
+
 ## Forbidden patterns
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
@@ -80,7 +85,9 @@ placeholder means adding it there and here, in the same commit.
   raw bytes.
 - No new table for a new capture list. `public.leads` takes a list name.
 - No per-theme branch in a component. A theme is CSS custom properties.
-- No silent `catch`. Every one returns `err(...)`, logs, or rethrows.
+- No silent `catch`. Every one returns `err(...)`, logs, or rethrows. A page that
+  degrades on a failed query still logs the reason: four silent catches once
+  made a misconfigured Sanity project invisible.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification

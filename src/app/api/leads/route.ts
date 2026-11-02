@@ -1,6 +1,7 @@
 import { leadInput } from "@/features/leads/leads.schema";
 import { captureLead } from "@/features/leads/leads.service";
 import { allow, clientKey } from "@/lib/rate-limit";
+import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
 
 export async function POST(request: Request): Promise<Response> {
@@ -14,7 +15,9 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const result = await captureLead(parsed.value);
-  if (!result.ok) return json({ message: "Could not save your details." }, 503);
+  if (!result.ok) {
+    return json({ message: "Could not save your details.", hint: setupHint() }, 503);
+  }
 
   return json({ message: `You are number ${result.value.position} in line.` });
 }

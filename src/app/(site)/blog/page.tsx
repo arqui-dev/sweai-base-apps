@@ -4,6 +4,8 @@ import { listPosts } from "@/features/posts/posts.queries";
 import type { PostSummary } from "@/features/posts/posts.types";
 import { formatMoney } from "@/lib/money";
 import { COFFEE } from "@/lib/stripe";
+import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 
 export const metadata = { title: "Blog" };
 
@@ -14,7 +16,8 @@ export default async function BlogPage() {
   let loadFailed = false;
   try {
     posts = await listPosts(50);
-  } catch {
+  } catch (error: unknown) {
+    logger.error("blog post query failed", { reason: reasonOf(error) });
     loadFailed = true;
   }
 

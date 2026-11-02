@@ -1,6 +1,7 @@
 import { subscribeInput } from "@/features/newsletter/newsletter.schema";
 import { subscribe } from "@/features/newsletter/newsletter.service";
 import { allow, clientKey } from "@/lib/rate-limit";
+import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
 
 export async function POST(request: Request): Promise<Response> {
@@ -14,7 +15,9 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const result = await subscribe(parsed.value);
-  if (!result.ok) return json({ message: "Could not save your address." }, 503);
+  if (!result.ok) {
+    return json({ message: "Could not save your address.", hint: setupHint() }, 503);
+  }
 
   return json({
     message: result.value.alreadySubscribed

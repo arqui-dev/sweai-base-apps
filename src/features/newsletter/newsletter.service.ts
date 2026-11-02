@@ -2,6 +2,7 @@ import { env } from "@/env";
 import { MAIL_FROM, resend } from "@/lib/resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 import { type Result, err, ok } from "@/shared/result";
 import type { SubscribeInput } from "./newsletter.schema";
 import { unsubscribeUrl } from "./unsubscribe";
@@ -50,7 +51,7 @@ export async function subscribe(
   await sendWelcome(input.email, input.name).catch((error: unknown) => {
     logger.error("welcome mail failed", {
       email: input.email,
-      reason: error instanceof Error ? error.message : String(error),
+      reason: reasonOf(error),
     });
   });
 
@@ -136,7 +137,7 @@ export async function sendCampaign(
       failed += batch.length;
       logger.error("campaign batch failed", {
         size: batch.length,
-        reason: error instanceof Error ? error.message : String(error),
+        reason: reasonOf(error),
       });
     }
   }

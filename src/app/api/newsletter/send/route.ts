@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { env } from "@/env";
 import { campaignInput } from "@/features/newsletter/newsletter.schema";
 import { sendCampaign } from "@/features/newsletter/newsletter.service";
+import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
 
 /** Constant-time compare so the token cannot be guessed byte by byte. */
@@ -24,7 +25,9 @@ export async function POST(request: Request): Promise<Response> {
 
   const { subject, html, limit } = parsed.value;
   const result = await sendCampaign(subject, html, limit);
-  if (!result.ok) return json({ message: "Could not load recipients." }, 503);
+  if (!result.ok) {
+    return json({ message: "Could not load recipients.", hint: setupHint() }, 503);
+  }
 
   return json(result.value);
 }

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { publicEnv } from "@/env.public";
 import { listPosts } from "@/features/posts/posts.queries";
 import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 
 const STATIC_PATHS = [
   ["", 1, "weekly"],
@@ -42,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch (error: unknown) {
     logger.warn("sitemap post query failed", {
-      reason: error instanceof Error ? error.message : String(error),
+      reason: reasonOf(error),
     });
   }
 

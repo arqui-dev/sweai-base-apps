@@ -1,6 +1,7 @@
 import { MAIL_FROM, resend } from "@/lib/resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/shared/logger";
+import { reasonOf } from "@/shared/reason";
 import { type Result, err, ok } from "@/shared/result";
 import type { LeadInput } from "./leads.schema";
 
@@ -41,7 +42,7 @@ export async function captureLead(
     })
     .catch((error: unknown) => {
       logger.error("lead confirmation mail failed", {
-        reason: error instanceof Error ? error.message : String(error),
+        reason: reasonOf(error),
       });
     });
 
