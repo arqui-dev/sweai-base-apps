@@ -51,6 +51,7 @@ Nothing untrusted reaches a service without passing a Zod schema first.
 | `POST /api/newsletter` | `subscribeInput`, trims and lowercases the email |
 | `POST /api/leads` | `leadInput`, `list` restricted to a two-value enum |
 | `POST /api/checkout` | `checkoutInput`, quantity 1 to 20, slug restricted to `[a-z0-9-]` |
+| `POST /api/newsletter/unsubscribe` | `e` as an email, `t` as a 16 to 128 character token, both from the query string |
 | `POST /api/newsletter/send` | `campaignInput`, `limit` capped at 500 |
 | Stripe webhook | `stripe.webhooks.constructEvent`, which is the validation |
 
@@ -107,7 +108,27 @@ per IP on the public forms and ten on checkout. It is per serverless instance,
 which the file says out loud. It stops a single script; it is not a global
 limit, and the upgrade path is Vercel Firewall rules or Upstash.
 
-## 8.9 Security headers
+## 8.9 Unsubscribing
+
+Addresses are guessable, so an unsubscribe link carries an HMAC-SHA256
+signature over the lowercased address, keyed by `NEWSLETTER_SECRET`.
+`verifyEmailToken` compares with `timingSafeEqual` on equal-length buffers.
+
+The endpoint is POST only. A GET that unsubscribed would fire on every mail
+client link prefetch and security scan, which silently removes people who never
+clicked. The page therefore renders a confirm button, and the same URL also
+serves RFC 8058 one-click requests, whose body is a fixed form field rather than
+JSON. That is why the address and signature live in the query string.
+
+The write is a soft delete: `unsubscribed_at` is set, the row stays, and the
+campaign query filters on `unsubscribed_at is null`. Re-subscribing clears the
+timestamp through the existing upsert, so nothing special handles a returning
+subscriber.
+
+Rotating `NEWSLETTER_SECRET` invalidates every link already in an inbox.
+Section 11 records that cost.
+
+## 8.10 Security headers
 
 Set in `next.config.ts` for every route: `nosniff`, `SAMEORIGIN`,
 `strict-origin-when-cross-origin`, a `Permissions-Policy` that denies camera,

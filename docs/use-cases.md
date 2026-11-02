@@ -1,6 +1,6 @@
 # Use cases
 
-Twelve use cases. Each names its actor, its trigger, the code that implements
+Thirteen use cases. Each names its actor, its trigger, the code that implements
 it, and the one failure worth designing for. "Checked by" names the test or the
 mechanism that keeps it honest.
 
@@ -12,6 +12,7 @@ flowchart LR
   V --> UC5[UC-05 Subscribe to the newsletter]
   V --> UC6[UC-06 Join a lead list]
   V --> UC11[UC-11 Switch theme]
+  V --> UC13[UC-13 Unsubscribe]
 
   R((Reader)) --> UC4[UC-04 Sign in with a magic link]
   R --> UC7[UC-07 Read a premium post]
@@ -157,3 +158,14 @@ flowchart LR
 | Outcome | `{ sent, failed }` counts |
 | Designed failure | A guessed token. The comparison is `timingSafeEqual` on equal-length buffers, so it leaks no timing signal; a wrong token returns 401 before the body is parsed |
 | Checked by | `curl` with no authorization header returns 401 |
+
+## UC-13: Unsubscribe
+
+| | |
+|---|---|
+| Actor | Subscriber, from an inbox or from `/profile` |
+| Trigger | The signed link in any mail footer, the mail client's own unsubscribe button, or the Leave link on the profile |
+| Implementation | `features/newsletter/unsubscribe.ts`, `POST /api/newsletter/unsubscribe`, `/unsubscribe` page |
+| Outcome | `unsubscribed_at` set, row kept, campaign query stops selecting the address |
+| Designed failure | A link scanner prefetching the URL, or someone unsubscribing a guessed address. The endpoint is POST only, and the token is an HMAC over the address compared with `timingSafeEqual` |
+| Checked by | `unsubscribe.test.ts`, five cases including a token minted for a different address |

@@ -27,6 +27,7 @@ the current list.
 | CSP is report-only | An injected script would run | Headers plus React escaping plus no `dangerouslySetInnerHTML` | Before any real customer traffic: read the reports, then enforce |
 | Sanity dataset is public-read | Draft content could be fetched with a guessed query | Queries exclude `drafts.**`, and premium bodies gate on `$entitled` | Content becomes commercially sensitive |
 | Studio bundle ships to the browser | Large client-only bundle on `/studio` | Route is `noindex`, link is a full page load, no prefetch | Bundle size affects the site's own routes |
+| `NEWSLETTER_SECRET` rotation breaks mailed unsubscribe links | Recipients see "not valid" and cannot leave | Documented as rotate-never in section 7, and the profile page carries a freshly signed link | A compromise forces rotation: accept both the old and new secret for one mailing cycle |
 | No uptime or error alerting | A broken grant path could go unnoticed | Vercel logs | The site stops being a study project |
 
 ## Known gaps, by request

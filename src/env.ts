@@ -22,6 +22,8 @@ const serverSchema = z.object({
   RESEND_AUDIENCE_ID: z.string().min(1).optional(),
 
   ADMIN_API_TOKEN: z.string().min(16),
+  /** Signs unsubscribe links. Rotating it invalidates links already mailed. */
+  NEWSLETTER_SECRET: z.string().min(32),
 });
 
 const parsed = serverSchema.safeParse(process.env);

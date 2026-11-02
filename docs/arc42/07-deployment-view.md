@@ -57,8 +57,11 @@ dev data, which is recorded in section 11.
 Set every key from `.env.example` in the Vercel project. Two rules:
 
 - `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
-  `RESEND_API_KEY` and `ADMIN_API_TOKEN` are server-only. A `NEXT_PUBLIC_`
-  prefix on any of them publishes it to every browser.
+  `RESEND_API_KEY`, `ADMIN_API_TOKEN` and `NEWSLETTER_SECRET` are server-only. A
+  `NEXT_PUBLIC_` prefix on any of them publishes it to every browser.
+- `NEWSLETTER_SECRET` signs unsubscribe links. Rotating it breaks every link in
+  an inbox, so generate it once per environment with
+  `openssl rand -base64 32` and leave it alone.
 - `NEXT_PUBLIC_SITE_URL` must match the deployment it runs on, because Stripe
   redirect URLs and magic-link callbacks are built from it.
 

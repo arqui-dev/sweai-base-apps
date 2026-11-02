@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logger } from "@/shared/logger";
 import { type Result, err, ok } from "@/shared/result";
 import type { SubscribeInput } from "./newsletter.schema";
+import { unsubscribeUrl } from "./unsubscribe";
 
 export type SubscribeError = "STORAGE_ERROR";
 
@@ -61,15 +62,35 @@ async function sendWelcome(email: string, name?: string): Promise<void> {
     await resend.contacts.create({ email, audienceId: env.RESEND_AUDIENCE_ID });
   }
 
+  const leave = unsubscribeUrl(email);
+
   await resend.emails.send({
     from: MAIL_FROM,
     to: email,
     subject: "You are on the list",
     html: `<p>Hi ${name ?? "there"},</p>
 <p>Thanks for subscribing. New posts land in your inbox, nothing else.</p>
-<p>Premium posts unlock for the price of one coffee.</p>`,
+<p>Premium posts unlock for the price of one coffee.</p>
+${footer(leave)}`,
+    headers: listUnsubscribeHeaders(leave),
   });
 }
+
+/** Every mail carries a working way out. The subscribe page promises this. */
+const footer = (leave: string): string =>
+  `<hr /><p style="font-size:12px;color:#71717a">
+You are receiving this because you subscribed at Hire Service.
+<a href="${leave}">Unsubscribe</a>.</p>`;
+
+/**
+ * RFC 8058 one-click unsubscribe. Mail clients render their own unsubscribe
+ * button from these, which gets the address off the list without a round trip
+ * through the browser.
+ */
+const listUnsubscribeHeaders = (leave: string): Record<string, string> => ({
+  "List-Unsubscribe": `<${leave}>`,
+  "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+});
 
 export type CampaignResult = { sent: number; failed: number };
 
@@ -99,7 +120,16 @@ export async function sendCampaign(
     const batch = recipients.slice(i, i + 100);
     try {
       await resend.batch.send(
-        batch.map((to) => ({ from: MAIL_FROM, to, subject, html })),
+        batch.map((to) => {
+          const leave = unsubscribeUrl(to);
+          return {
+            from: MAIL_FROM,
+            to,
+            subject,
+            html: `${html}${footer(leave)}`,
+            headers: listUnsubscribeHeaders(leave),
+          };
+        }),
       );
       sent += batch.length;
     } catch (error: unknown) {

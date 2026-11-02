@@ -29,6 +29,7 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `/cart` | Single-line-item cart with a quantity stepper |
 | `/login` | Magic-link sign in, no passwords |
 | `/profile` | Email, premium state, newsletter state, sign out |
+| `/unsubscribe` | Signed one-click unsubscribe, reached from a mail footer |
 | `/success` | Post-payment landing |
 | `/studio` | Sanity Studio |
 
@@ -40,6 +41,7 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `POST /api/leads` | Public, 5 req/min/IP | `leadInput` |
 | `POST /api/checkout` | Public, 10 req/min/IP | `checkoutInput` |
 | `POST /api/stripe/webhook` | Stripe signature | `stripe.webhooks.constructEvent` |
+| `POST /api/newsletter/unsubscribe` | HMAC signature over the address | query `e` and `t` |
 | `POST /api/newsletter/send` | Bearer `ADMIN_API_TOKEN`, constant-time compare | `campaignInput` |
 | `GET /auth/callback` | Supabase code | Same-origin `next` only |
 
@@ -109,7 +111,7 @@ sanity/schema/         the post document type
 docs/arc42/            architecture, twelve sections, Mermaid C4
 docs/adr/              five decision records
 docs/personas.md       five personas and the decisions made for them
-docs/use-cases.md      twelve use cases with their designed failure
+docs/use-cases.md      thirteen use cases with their designed failure
 .claude/agents/        six project agents
 ```
 

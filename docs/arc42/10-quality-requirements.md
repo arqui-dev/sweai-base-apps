@@ -44,7 +44,9 @@ flowchart LR
 | S7 | A third capture list is needed | One enum value, no migration | `LEAD_LISTS` plus the `check` constraint |
 | S8 | A contributor runs `npm run verify` on a clean clone | Typecheck, lint and tests pass with placeholder env | CI job `verify` |
 | S9 | A secret is committed | The pipeline fails before merge | CI job `secrets` with gitleaks |
-| S10 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
+| S10 | A mail security scanner prefetches an unsubscribe link | Nothing changes; the endpoint rejects GET | `POST` only handler, confirm button on the page |
+| S11 | Someone posts an unsubscribe for a guessed address with no token | 403, nothing written | `unsubscribe.test.ts` |
+| S12 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
 
 ## What is not measured
 

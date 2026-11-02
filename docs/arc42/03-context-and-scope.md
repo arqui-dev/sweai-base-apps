@@ -36,8 +36,8 @@ C4Context
 
 Reading free and premium posts, one-off payment for premium access, magic-link
 sign in, a profile page showing access and subscription state, newsletter
-subscribe and campaign send, two lead lists, a single-line-item cart, five
-themes, and the embedded Sanity Studio.
+subscribe, signed unsubscribe and campaign send, two lead lists, a
+single-line-item cart, five themes, and the embedded Sanity Studio.
 
 ## Out of scope
 
@@ -53,6 +53,7 @@ likely next and what triggers each.
 | In | `POST /api/leads` | `{ email, list, name?, company?, note? }`, validated by `leadInput` |
 | In | `POST /api/checkout` | `{ quantity?, email?, slug? }`, validated by `checkoutInput`; price comes from server config |
 | In | `POST /api/stripe/webhook` | Stripe event, rejected unless the signature verifies |
+| In | `POST /api/newsletter/unsubscribe` | `?e=<email>&t=<hmac>`, POST only, signature verified in constant time |
 | In | `POST /api/newsletter/send` | `{ subject, html, limit? }`, bearer `ADMIN_API_TOKEN`, compared in constant time |
 | In | `GET /auth/callback` | Supabase magic-link code, redirects to a same-origin path only |
 | Out | Supabase REST and Auth | `@supabase/ssr` and `@supabase/supabase-js` |

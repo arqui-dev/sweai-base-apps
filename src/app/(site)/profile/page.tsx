@@ -4,6 +4,7 @@ import { CoffeeButton } from "@/components/coffee-button";
 import { EmailCapture } from "@/components/email-capture";
 import { btn, card, section } from "@/components/ui/styles";
 import { hasPremium } from "@/features/payments/entitlements.service";
+import { unsubscribeUrl } from "@/features/newsletter/unsubscribe";
 import { formatMoney } from "@/lib/money";
 import { COFFEE } from "@/lib/stripe";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -44,7 +45,22 @@ export default async function ProfilePage() {
         </div>
         <div className="flex justify-between gap-4">
           <dt className="text-muted">Newsletter</dt>
-          <dd>{isSubscribed ? "Subscribed" : "Not subscribed"}</dd>
+          <dd>
+            {isSubscribed ? (
+              <>
+                Subscribed{" "}
+                {/* Signed link, same one the mail footer uses. */}
+                <a
+                  href={unsubscribeUrl(auth.user.email ?? "")}
+                  className="text-accent underline"
+                >
+                  Leave
+                </a>
+              </>
+            ) : (
+              "Not subscribed"
+            )}
+          </dd>
         </div>
       </dl>
 
