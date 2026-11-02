@@ -142,8 +142,8 @@ flowchart LR
 | | |
 |---|---|
 | Actor | Any visitor |
-| Trigger | The select in the header |
-| Implementation | `ThemeSwitcher` sets `data-theme` and the cookie; the root layout reads the cookie |
+| Trigger | The select in the header, or "Use this design" on `/themes` |
+| Implementation | `applyTheme` sets `data-theme` and the cookie; the root layout reads the cookie; `/themes` previews all five by scoping the attribute to a wrapper |
 | Outcome | All five presets apply with no reload and no re-render |
 | Designed failure | A tampered cookie value. `isThemeId` rejects it and falls back to `minimalist`, so the page is never unstyled |
 | Checked by | `curl -b "theme=bogus" /` renders `data-theme="minimalist"` |

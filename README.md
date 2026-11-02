@@ -27,6 +27,7 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `/waitlist` | Lead capture, `waitlist` list |
 | `/early-access` | Lead capture, `early-access` list |
 | `/cart` | Single-line-item cart with a quantity stepper |
+| `/themes` | Design gallery: all five rendered live, pick one to apply |
 | `/login` | Magic-link sign in, no passwords |
 | `/profile` | Email, premium state, newsletter state, sign out |
 | `/unsubscribe` | Signed one-click unsubscribe, reached from a mail footer |
@@ -48,9 +49,14 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 ## Themes
 
 Five presets: `minimalist`, `modern`, `brutalist`, `editorial`, `terminal`.
-Switch with the control in the header. Each one is a block of CSS custom
-properties in `src/app/themes.css`, so no component knows which is active.
-Adding a sixth is one CSS block and one array entry.
+Compare them at [`/themes`](src/app/(site)/themes/page.tsx) or switch with the
+control in the header. Each one is a block of fifteen CSS custom properties in
+`src/app/themes.css`, so no component knows which is active, and adding a sixth
+is one CSS block plus one array entry.
+
+The gallery renders all five at once because the theme selectors are
+`[data-theme="..."]` and not `html[data-theme="..."]`, so the attribute on a
+preview wrapper restyles its own subtree. No iframes, no duplicated components.
 
 ## Getting started
 

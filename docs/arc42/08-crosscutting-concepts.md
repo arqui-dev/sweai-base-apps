@@ -92,11 +92,17 @@ reference only the Tailwind tokens mapped from those properties in
 | Define tokens | `src/app/themes.css`, one `[data-theme="..."]` block |
 | Register the preset | `THEMES` in `src/components/theme/themes.ts` |
 | Render the active theme | `data-theme` on `<html>` in the root layout, read from a cookie |
-| Switch | `ThemeSwitcher` sets the attribute and the cookie |
+| Switch | `applyTheme` in `src/components/theme/apply-theme.ts`, called by the header switcher and the gallery |
+| Compare | `/themes` renders all five previews at once |
 
 Server-rendering the attribute from the cookie is what avoids a flash of the
 wrong palette. An unknown cookie value falls back to `minimalist` through
 `isThemeId`, so a tampered cookie cannot produce an unstyled page.
+
+Theme selectors are `[data-theme="..."]`, not `html[data-theme="..."]`. That is
+deliberate: it lets `/themes` put the attribute on a preview wrapper and render
+every preset live on one page, using the same components, with no iframe and no
+duplicated markup.
 
 Adding a sixth theme is one CSS block and one array entry. No component
 changes, and no new class names.

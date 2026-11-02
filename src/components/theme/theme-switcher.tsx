@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { THEMES, THEME_COOKIE, type ThemeId } from "./themes";
+import { applyTheme } from "./apply-theme";
+import { THEMES, type ThemeId } from "./themes";
 
-/**
- * Writes the attribute the CSS reads, then persists the choice in a cookie so
- * the server renders the same theme on the next request and no flash occurs.
- */
 export function ThemeSwitcher({ current }: { current: ThemeId }) {
   const [theme, setTheme] = useState<ThemeId>(current);
 
-  const apply = (next: ThemeId) => {
-    document.documentElement.dataset.theme = next;
-    document.cookie = `${THEME_COOKIE}=${next};path=/;max-age=31536000;samesite=lax`;
+  const select = (next: ThemeId) => {
+    applyTheme(next);
     setTheme(next);
   };
 
@@ -21,7 +17,7 @@ export function ThemeSwitcher({ current }: { current: ThemeId }) {
       <span className="sr-only sm:not-sr-only">Theme</span>
       <select
         value={theme}
-        onChange={(event) => apply(event.target.value as ThemeId)}
+        onChange={(event) => select(event.target.value as ThemeId)}
         className="bg-surface text-ink border-(length:--border-width) border-border rounded-(--radius) px-2 py-1.5 text-xs"
       >
         {THEMES.map((t) => (
