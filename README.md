@@ -26,6 +26,7 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `/subscribe` | Newsletter signup |
 | `/waitlist` | Lead capture, `waitlist` list |
 | `/early-access` | Lead capture, `early-access` list |
+| `/coffee` | Standalone single-payment page: what it unlocks, one button |
 | `/cart` | Single-line-item cart with a quantity stepper |
 | `/themes` | Design gallery: all five rendered live, pick one to apply |
 | `/login` | Magic-link sign in, no passwords |

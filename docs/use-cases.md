@@ -54,7 +54,7 @@ flowchart LR
 | | |
 |---|---|
 | Actor | Visitor, not signed in |
-| Trigger | Coffee button, with an email for the receipt |
+| Trigger | Coffee button on `/coffee`, the landing page, or a paywall, with an email for the receipt |
 | Implementation | `POST /api/checkout`, `checkout.service`, Stripe Checkout, `POST /api/stripe/webhook`, `grantPremium` |
 | Outcome | One `entitlements` row keyed to the receipt email |
 | Designed failure | Stripe replays the event. `unique (stripe_event_id)` plus `ignoreDuplicates` makes the second delivery a no-op |

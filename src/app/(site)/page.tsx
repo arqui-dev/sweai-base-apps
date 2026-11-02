@@ -107,6 +107,11 @@ export default async function LandingPage() {
               {priceLabel} once. Unlocks every premium post, forever, with no subscription.
             </p>
             <CoffeeButton needsEmail={!user} />
+            <p className="mt-4 text-xs text-muted">
+              <Link href="/coffee" className="text-accent underline">
+                What a coffee unlocks
+              </Link>
+            </p>
           </div>
 
           <div className={card()}>

@@ -24,6 +24,11 @@ export function Paywall({
       <CoffeeButton slug={slug} needsEmail={!isSignedIn}>
         Unlock for {priceLabel}
       </CoffeeButton>
+      <p className="mt-4 text-xs text-muted">
+        <Link href="/coffee" className="text-accent underline">
+          What a coffee unlocks
+        </Link>
+      </p>
       {!isSignedIn && (
         <p className="mt-4 text-xs text-muted">
           Already paid?{" "}
