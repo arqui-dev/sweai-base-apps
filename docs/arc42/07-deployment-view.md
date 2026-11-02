@@ -56,7 +56,7 @@ dev data, which is recorded in section 11.
 
 Set every key from `.env.example` in the Vercel project. Two rules:
 
-- `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+- `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `RESEND_API_KEY`, `ADMIN_API_TOKEN` and `NEWSLETTER_SECRET` are server-only. A
   `NEXT_PUBLIC_` prefix on any of them publishes it to every browser.
 - `NEWSLETTER_SECRET` signs unsubscribe links. Rotating it breaks every link in

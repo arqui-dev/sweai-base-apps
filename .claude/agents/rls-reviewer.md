@@ -14,12 +14,12 @@ is to confirm the failure mode stays "no rows" and never "every row".
 For every table in `supabase/schema.sql`:
 
 1. `alter table ... enable row level security` is present. A table without it is
-   fully readable with the public anon key.
+   fully readable with the public publishable key.
 2. Every `select` policy names a predicate tied to the caller: `auth.uid()`,
    `auth.email()`, or a function that resolves to one of them. A policy with
    `using (true)` is a public table, and must be deliberate and commented.
 3. A table with no policy is write-only from the service role. Confirm no page
-   or route handler queries it with the anon or user client, because that will
+   or route handler queries it with the publishable or user client, because that
    silently return nothing.
 4. `insert`, `update` and `delete` policies have a `with check` clause that
    matches their `using` clause. A missing `with check` on update lets a user

@@ -58,7 +58,7 @@ Ordered highest risk first. Ask before changing anything in layers 1 to 3.
 
 ## Forbidden patterns
 
-- `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+- `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `RESEND_API_KEY` and `ADMIN_API_TOKEN` must never appear in a `NEXT_PUBLIC_`
   variable, a client component, or a log line.
 - No `process.env` outside `src/env.ts`, `src/env.public.ts`,

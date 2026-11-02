@@ -1,6 +1,6 @@
 -- Hire Service schema. Apply with the Supabase SQL editor or `supabase db push`.
 -- Every table has row level security on with no permissive default, so a leaked
--- anon key grants nothing beyond what a policy below explicitly allows.
+-- publishable key grants nothing beyond what a policy below explicitly allows.
 
 -- ---------------------------------------------------------------------------
 -- profiles: the app's own row per auth user

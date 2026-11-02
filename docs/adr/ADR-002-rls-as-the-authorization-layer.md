@@ -12,12 +12,12 @@ Four tables hold data with different visibility: `profiles` and
 `entitlements` are per-user, `newsletter_subscribers` is per-address, and
 `leads` should not be readable through the API at all. Server Components query
 Supabase directly, so authorization cannot live only in route handlers. The
-anon key reaches the browser by design, which means anything the anon role can
-read is public.
+publishable key reaches the browser by design, which means anything the `anon`
+role can read is public.
 
 ## Decision drivers
 
-- The anon key is public. Table access has to be denied by default.
+- The publishable key is public. Table access has to be denied by default.
 - Server Components read Supabase directly, so there is no single choke point in
   application code to guard.
 - A forgotten `if` in one of twelve pages must not expose another user's rows.

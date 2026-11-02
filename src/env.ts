@@ -8,7 +8,14 @@ import { z } from "zod";
 const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  // Prefix-checked so a publishable key pasted here fails the boot instead of
+  // silently losing every service-role write to row level security.
+  SUPABASE_SECRET_KEY: z
+    .string()
+    .min(1)
+    .refine((v) => v.startsWith("sb_secret_") || v.startsWith("eyJ"), {
+      message: 'must be a Supabase secret key ("sb_secret_...") or a legacy service_role JWT',
+    }),
 
   STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
