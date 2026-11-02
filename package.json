@@ -13,7 +13,9 @@
     "verify": "npm run typecheck && npm run lint && npm run test",
     "scan:secrets": "gitleaks git . --config .gitleaks.toml --gitleaks-ignore-path .gitleaksignore --redact --no-banner --exit-code 1",
     "audit:runtime": "npm audit --omit=dev --audit-level=info",
-    "audit:all": "npm audit"
+    "audit:all": "npm audit",
+    "env:push": "./scripts/env-push.sh",
+    "env:pull": "vercel env pull .env.local"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

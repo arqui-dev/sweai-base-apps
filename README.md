@@ -116,6 +116,8 @@ npm run test:watch    # vitest in watch mode
 npm run audit:runtime # gated: any advisory in the runtime tree fails
 npm run audit:all     # reported: build-time tooling, not gated
 npm run scan:secrets  # gitleaks over full history (needs the gitleaks binary)
+npm run env:push      # .env.local -> Vercel (development + preview)
+npm run env:pull      # Vercel -> .env.local
 ```
 
 CI runs `verify` plus `build` with placeholder credentials, and a pinned
@@ -165,6 +167,28 @@ docs/use-cases.md      thirteen use cases with their designed failure
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings
   and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
+
+## Environment variables on Vercel
+
+```bash
+npm run env:push                            # development + preview
+npm run env:push -- --production            # all three environments
+npm run env:push -- --file .env.prod --project other-project
+```
+
+There is no `vercel env push`, and `vercel env add` has no `--force`, so this
+upserts through the REST API. Auth comes from `VERCEL_TOKEN` or from the token
+`vercel login` already stored.
+
+It refuses two kinds of value rather than pushing them:
+
+- **Committed placeholders.** `ADMIN_API_TOKEN=placeholder-admin-token-32-chars`
+  in production would let anyone who can read this repository authenticate to
+  `/api/newsletter/send`. Empty is strictly safer, because an unset secret gets
+  random bytes at boot and fails closed.
+- **A localhost `NEXT_PUBLIC_SITE_URL`.** Stripe redirects and magic-link
+  callbacks are built from it. Left empty it falls back to the deployment's own
+  URL, which is right for a preview; production needs the real domain.
 
 ## Dependencies
 

@@ -137,6 +137,9 @@ Non-negotiable:
 - No unlogged security event. A rate-limit rejection, a rejected admin token
   and a failed code exchange each log at `warn`.
 - No new dependency without a row in `docs/dependencies.md`.
+- No pushing a committed placeholder to a deployed environment. Empty is safer:
+  unset secrets get random bytes at boot and fail closed. `npm run env:push`
+  enforces this; do not work around it.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification

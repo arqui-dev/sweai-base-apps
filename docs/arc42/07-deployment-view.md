@@ -61,6 +61,10 @@ than the committed placeholders, so an unconfigured deployment rejects every
 admin token, webhook signature and unsubscribe link instead of accepting a
 value published in this repository.
 
+`npm run env:push` copies `.env.local` into the project (`--production` to
+include production). It refuses to push a committed placeholder or a localhost
+site URL, because both are worse than leaving the variable empty.
+
 Set every key from `.env.example` in the Vercel project. Two rules:
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
