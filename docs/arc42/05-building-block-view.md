@@ -80,7 +80,8 @@ C4Component
 
 | Building block | Owns | Must not |
 |----------------|------|----------|
-| `src/app/(site)/**` | Layout, copy, which component renders | Call Stripe, Supabase or Sanity directly |
+| `src/app/(site)/**` | Layout, copy, which component renders, plus `not-found`, `error` and `loading` | Call Stripe, Supabase or Sanity directly |
+| `src/app/robots.ts`, `src/app/sitemap.ts` | What crawlers may index | Fail the response when Sanity is down |
 | `src/app/api/**` | Rate limiting, parsing, status codes | Hold business rules |
 | `src/features/posts` | The read rule for premium content | Know about HTTP |
 | `src/features/payments` | Price, grant, idempotency, signature check | Trust any number from a request |

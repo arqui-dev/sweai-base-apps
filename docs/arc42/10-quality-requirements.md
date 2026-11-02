@@ -46,7 +46,9 @@ flowchart LR
 | S9 | A secret is committed | The pipeline fails before merge | CI job `secrets` with gitleaks |
 | S10 | A mail security scanner prefetches an unsubscribe link | Nothing changes; the endpoint rejects GET | `POST` only handler, confirm button on the page |
 | S11 | Someone posts an unsubscribe for a guessed address with no token | 403, nothing written | `unsubscribe.test.ts` |
-| S12 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
+| S12 | Sanity is unreachable when a crawler requests the sitemap | 200 with the static paths, warning logged | `try`/`catch` in `src/app/sitemap.ts` |
+| S13 | `assertNoLeak` throws on a post render | The error boundary renders, never a partial post | `src/app/(site)/error.tsx` |
+| S14 | A keyboard user tabs the cart | Focus ring visible in all five themes | `:focus-visible` rule in `globals.css` |
 
 ## What is not measured
 

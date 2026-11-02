@@ -35,6 +35,9 @@ Next.js 16 (App Router, React 19, TypeScript strict, Tailwind v4)
 | `/success` | Post-payment landing |
 | `/studio` | Sanity Studio |
 
+Plus `not-found` and an error boundary for the site shell, `robots.txt`, and a
+`sitemap.xml` built from the published posts.
+
 ## API
 
 | Route | Auth | Validated by |
@@ -107,6 +110,8 @@ src/
     studio/            Sanity Studio, outside the site shell
     globals.css        Tailwind tokens mapped from theme variables
     themes.css         the five theme blocks
+    robots.ts          disallows the editor, personal and write routes
+    sitemap.ts         static paths plus every published post
   features/            the rules: schemas, services, the paywall gate
   lib/                 one configured client per external service
   shared/              Result, logger, request body parsing

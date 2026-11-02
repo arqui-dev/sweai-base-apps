@@ -134,7 +134,18 @@ subscriber.
 Rotating `NEWSLETTER_SECRET` invalidates every link already in an inbox.
 Section 11 records that cost.
 
-## 8.10 Security headers
+## 8.10 Crawlers
+
+`src/app/robots.ts` disallows `/api/`, `/auth/`, `/studio`, `/profile`,
+`/unsubscribe` and `/success`. The editor and the personal pages have no
+business in a search index, and `/unsubscribe` carries a signed token.
+
+`src/app/sitemap.ts` lists the static paths plus every published post, premium
+ones included: titles and excerpts are public, and only the body is gated. A
+failed Sanity query degrades to the static paths with a warning, because a
+missing sitemap costs more than a stale one.
+
+## 8.11 Security headers
 
 Set in `next.config.ts` for every route: `nosniff`, `SAMEORIGIN`,
 `strict-origin-when-cross-origin`, a `Permissions-Policy` that denies camera,
