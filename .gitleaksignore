@@ -1,0 +1,23 @@
+# Reviewed historical findings, by exact fingerprint (commit:file:rule:line).
+#
+# Scoped to one finding in one commit each. The same pattern appearing in any
+# other commit, file or line still fails the scan. Never add an entry here
+# without writing down why below.
+#
+# Both findings come from commit b61ee43, which added
+# src/shared/config-check.test.ts with credential-shaped string literals as
+# test fixtures. The next commit replaced them with values assembled at
+# runtime, so neither value exists in the tree any more.
+#
+# 1. generic-api-key, line 17: a truncated copy of the arqui.dev Supabase
+#    publishable key. Publishable keys are designed to ship to the browser and
+#    are protected by row level security, and this copy is missing its last
+#    nine characters, so it is not usable even as a publishable key. Rotate it
+#    in the Supabase dashboard if you want the historical value dead.
+b61ee43efbaf4801494414ec37108b00ddd29401:src/shared/config-check.test.ts:generic-api-key:17
+
+# 2. stripe-access-token, line 42: a hand-invented live-key-shaped string, used
+#    to prove looksPlaceholder() returns false for a credential-shaped value.
+#    It was never a real key and never worked. The literal is not repeated here,
+#    because writing it down would itself trip the scanner.
+b61ee43efbaf4801494414ec37108b00ddd29401:src/shared/config-check.test.ts:stripe-access-token:42

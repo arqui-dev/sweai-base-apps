@@ -88,6 +88,10 @@ instead.
 - No silent `catch`. Every one returns `err(...)`, logs, or rethrows. A page that
   degrades on a failed query still logs the reason: four silent catches once
   made a misconfigured Sanity project invisible.
+- No credential-shaped literals in test fixtures. A test that needs a value
+  which does *not* look like a placeholder assembles it at runtime, as
+  `src/shared/config-check.test.ts` does. Never paste a real credential into a
+  test, not even a truncated one.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification
@@ -99,7 +103,12 @@ process violation, not an optimism problem.
 ```bash
 npm run verify
 npm run build
+npm run scan:secrets   # needs the gitleaks binary; CI is the enforcing gate
 ```
+
+`scan:secrets` reads `.gitleaks.toml` and `.gitleaksignore`. Run it before
+pushing anything that adds a key-shaped string. CI runs it over full history
+regardless, so skipping it locally only moves the failure later.
 
 ## Project agents
 

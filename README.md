@@ -96,16 +96,20 @@ in [docs/arc42/07-deployment-view.md](docs/arc42/07-deployment-view.md).
 ## Scripts
 
 ```bash
-npm run dev         # Next dev server
-npm run verify      # typecheck + lint + test
-npm run build       # production build
-npm run test:watch  # vitest in watch mode
+npm run dev           # Next dev server
+npm run verify        # typecheck + lint + test
+npm run build         # production build
+npm run test:watch    # vitest in watch mode
+npm run scan:secrets  # gitleaks over full history (needs the gitleaks binary)
 ```
 
 CI runs `verify` plus `build` with placeholder credentials, and a pinned
 gitleaks CLI over the full history. The build never needs a real key.
 Placeholders are allowlisted in `.gitleaks.toml` by value rather than by path,
-so a real credential in one of those same files still fails the scan.
+so a real credential in one of those same files still fails the scan. Reviewed
+historical findings live in `.gitleaksignore`, keyed by exact
+`commit:file:rule:line` fingerprint, so the same pattern anywhere else still
+fails.
 
 ## Layout
 
