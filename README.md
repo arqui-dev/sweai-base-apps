@@ -71,10 +71,15 @@ npm install
 npm run dev
 ```
 
-The repository ships a `.env.local` with placeholders so `npm run build` works
-before any account exists. Replace them with real values before using a
-feature. Until you do, every write endpoint answers 503 with a `hint` naming
-the variables still unset, so a half-finished setup diagnoses itself:
+Every variable may be left empty, including on Vercel. The application boots,
+every page renders, and each feature degrades until its key is filled in, so
+the project can be deployed before any account exists. Empty secrets are
+replaced with random bytes rather than the committed placeholders, so every
+token and signature check fails closed instead of accepting a value anyone
+could read here.
+
+Outside production, a write endpoint answers 503 with a `hint` naming the
+variables still unset, so a half-finished setup diagnoses itself:
 
 ```json
 { "message": "Could not save your address.",

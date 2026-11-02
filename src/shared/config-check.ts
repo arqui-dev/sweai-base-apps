@@ -1,33 +1,37 @@
-import { env } from "@/env";
-import { publicEnv } from "@/env.public";
+import { env, unconfiguredServerVars } from "@/env";
+import { publicEnv, unconfiguredPublicVars } from "@/env.public";
 
 /**
- * The repository ships placeholder credentials so the build never needs real
- * ones. The cost is that an unconfigured service fails at the first write with
- * whatever the provider says, which for Supabase is a bare "Invalid API key"
- * in a server log. This turns that into a sentence naming the variable.
+ * Two ways a variable can be unconfigured, and both have to be reported.
+ *
+ * Empty or missing: `env.ts` records the name and substitutes a stand-in, which
+ * for a secret is random bytes. Pattern matching cannot find those, so the
+ * recorded list is the only source.
+ *
+ * Set to one of the committed placeholder values: common when someone copies
+ * `.env.example` or the CI block. Those are found by pattern.
  */
 export const looksPlaceholder = (value: string): boolean =>
   // `\bREPLACE\b` catches the .env.example spellings, including the ones
   // embedded in a URL like https://REPLACE.supabase.co.
-  /placeholder|replace_me|\breplace\b/i.test(value);
+  /placeholder|replace_me|\breplace\b|unconfigured/i.test(value);
 
 export function placeholderEnvVars(): readonly string[] {
-  const configured: Record<string, string> = {
+  const byPattern = Object.entries({
     NEXT_PUBLIC_SUPABASE_URL: publicEnv.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_SANITY_PROJECT_ID: publicEnv.NEXT_PUBLIC_SANITY_PROJECT_ID,
     SUPABASE_SECRET_KEY: env.SUPABASE_SECRET_KEY,
     STRIPE_SECRET_KEY: env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: env.STRIPE_WEBHOOK_SECRET,
-    NEXT_PUBLIC_SANITY_PROJECT_ID: publicEnv.NEXT_PUBLIC_SANITY_PROJECT_ID,
     RESEND_API_KEY: env.RESEND_API_KEY,
     ADMIN_API_TOKEN: env.ADMIN_API_TOKEN,
     NEWSLETTER_SECRET: env.NEWSLETTER_SECRET,
-  };
-
-  return Object.entries(configured)
+  })
     .filter(([, value]) => looksPlaceholder(value))
     .map(([name]) => name);
+
+  return [...new Set([...unconfiguredServerVars, ...unconfiguredPublicVars, ...byPattern])].sort();
 }
 
 /**
@@ -41,5 +45,5 @@ export function setupHint(): string | undefined {
   const pending = placeholderEnvVars();
   if (pending.length === 0) return undefined;
 
-  return `Setup incomplete. Still placeholders in .env.local: ${pending.join(", ")}`;
+  return `Setup incomplete. Still unset in .env.local: ${pending.join(", ")}`;
 }

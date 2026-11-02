@@ -5,11 +5,9 @@ import { describe, expect, it, vi } from "vitest";
  * literals. A test needs strings that do *not* look like placeholders in order
  * to prove the negative case, and a literal "sk_live_..." in a source file is
  * both a secret scanner finding and something a reader has to stop and verify
- * is fake. Building them from parts removes the token without weakening the
- * assertion. Never paste a real credential here, not even a truncated one.
+ * is fake. Never paste a real credential here, not even a truncated one.
  */
 const fakeKey = (prefix: string): string => `${prefix}_${"x7Qa".repeat(6)}`;
-const fakeProjectUrl = "https://abcdefghijklmnopqrst.supabase.co";
 
 vi.mock("@/env", () => ({
   env: {
@@ -21,6 +19,8 @@ vi.mock("@/env", () => ({
     ADMIN_API_TOKEN: "an-admin-token-that-is-set",
     NEWSLETTER_SECRET: "a-newsletter-secret-that-is-set",
   },
+  // Empty at boot, so env.ts recorded the name and substituted random bytes.
+  unconfiguredServerVars: ["ADMIN_API_TOKEN"],
 }));
 vi.mock("@/env.public", () => ({
   publicEnv: {
@@ -28,6 +28,7 @@ vi.mock("@/env.public", () => ({
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: `sb_publishable_${"x7Qa".repeat(6)}`,
     NEXT_PUBLIC_SANITY_PROJECT_ID: "placeholder",
   },
+  unconfiguredPublicVars: [],
 }));
 
 const { looksPlaceholder, placeholderEnvVars, setupHint } = await import("./config-check");
@@ -40,10 +41,11 @@ describe("looksPlaceholder", () => {
       "sb_secret_PLACEHOLDER_REPLACE_ME",
       "REPLACE",
       "re_placeholder",
-      // The spelling a fresh clone gets from .env.example.
       "https://REPLACE.supabase.co",
+      "https://unconfigured.supabase.co",
+      "sb_publishable_unconfigured",
     ]) {
-      expect(looksPlaceholder(value)).toBe(true);
+      expect(looksPlaceholder(value), value).toBe(true);
     }
   });
 
@@ -53,16 +55,18 @@ describe("looksPlaceholder", () => {
       fakeKey("sk_live"),
       fakeKey("whsec"),
       fakeKey("re"),
-      fakeProjectUrl,
+      "https://abcdefghijklmnopqrst.supabase.co",
     ]) {
-      expect(looksPlaceholder(value)).toBe(false);
+      expect(looksPlaceholder(value), value).toBe(false);
     }
   });
 });
 
 describe("placeholderEnvVars", () => {
-  it("names only the unconfigured variables", () => {
-    expect([...placeholderEnvVars()].sort()).toStrictEqual([
+  it("merges the empty-at-boot list with the ones matching a placeholder", () => {
+    expect([...placeholderEnvVars()]).toStrictEqual([
+      // recorded as empty at boot, so its random value is invisible to a pattern
+      "ADMIN_API_TOKEN",
       "NEXT_PUBLIC_SANITY_PROJECT_ID",
       "RESEND_API_KEY",
       "STRIPE_SECRET_KEY",
@@ -75,7 +79,7 @@ describe("setupHint", () => {
   it("names the pending variables outside production", () => {
     const hint = setupHint();
     expect(hint).toContain("SUPABASE_SECRET_KEY");
-    expect(hint).toContain("STRIPE_SECRET_KEY");
+    expect(hint).toContain("ADMIN_API_TOKEN");
   });
 
   it("says nothing in production, so a caller learns no config detail", async () => {
@@ -90,6 +94,15 @@ describe("setupHint", () => {
         ADMIN_API_TOKEN: "placeholder",
         NEWSLETTER_SECRET: "placeholder",
       },
+      unconfiguredServerVars: [],
+    }));
+    vi.doMock("@/env.public", () => ({
+      publicEnv: {
+        NEXT_PUBLIC_SUPABASE_URL: "https://x.supabase.co",
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_x",
+        NEXT_PUBLIC_SANITY_PROJECT_ID: "x",
+      },
+      unconfiguredPublicVars: [],
     }));
     const prod = await import("./config-check");
     expect(prod.setupHint()).toBeUndefined();

@@ -182,7 +182,24 @@ message. Every interpolated value goes through `escapeHtml`, or the forms would
 let anyone mail arbitrary markup from a verified domain. Both helpers are nine
 lines over a built-in and are covered by `src/shared/sanitize.test.ts`.
 
-## 8.12 Dependency and vulnerability policy
+## 8.12 Unconfigured deployments
+
+Every variable may be empty. `src/env.ts` records the name and substitutes a
+stand-in instead of throwing, so the application deploys before any account
+exists and each feature degrades on its own: writes answer 503, reads log and
+fall back, and `setupHint` names the pending variables outside production.
+
+Secrets never fall back to a fixed string. The placeholder values committed for
+CI are public, so substituting one for an empty `ADMIN_API_TOKEN` would mean a
+request carrying that published value authenticated. Unset secrets get random
+bytes, which makes every comparison against them fail closed and leaves the
+admin endpoint, the webhook and the unsubscribe link unusable rather than open.
+
+A variable that is set but malformed still stops the boot. Unset and wrong are
+different: `sb_publishable_...` in `SUPABASE_SECRET_KEY` is a mistake, not a
+deployment that has not been configured yet.
+
+## 8.13 Dependency and vulnerability policy
 
 `npm run audit:runtime` gates the `--omit=dev` tree at `--audit-level=info`:
 any advisory, any severity, fails the build. Build and editor tooling is
@@ -195,7 +212,7 @@ The pipeline is treated as part of the supply chain: `npm ci` rather than
 `npm install`, actions pinned by commit SHA, `permissions: contents: read`, and
 a checksum on the one binary CI downloads.
 
-## 8.13 Security headers
+## 8.14 Security headers
 
 Set in `next.config.ts` for every route: `nosniff`, `SAMEORIGIN`,
 `strict-origin-when-cross-origin`, a `Permissions-Policy` that denies camera,

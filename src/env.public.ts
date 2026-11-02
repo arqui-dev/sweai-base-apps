@@ -3,7 +3,22 @@ import { z } from "zod";
 /**
  * Browser-visible environment. Values are inlined by the bundler, so each one
  * is referenced as a literal `process.env.NEXT_PUBLIC_*` expression.
+ *
+ * As on the server, an empty variable means "not configured yet" rather than a
+ * fatal error. Nothing here is secret, so the stand-ins are fixed strings
+ * rather than random: a request to an unconfigured host fails, and the callers
+ * already catch, log and degrade from that.
  */
+
+const unconfiguredNames: string[] = [];
+
+function orFallback(name: string, raw: string | undefined, fallback: string): string {
+  const trimmed = raw?.trim();
+  if (trimmed) return trimmed;
+  unconfiguredNames.push(name);
+  return fallback;
+}
+
 const publicSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -25,14 +40,39 @@ const publicSchema = z.object({
   NEXT_PUBLIC_SANITY_STUDIO_URL: z.string().url().optional(),
 });
 
-const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL;
+/**
+ * Vercel injects NEXT_PUBLIC_VERCEL_URL on every deployment, so a preview works
+ * without anyone setting the site URL by hand. Stripe redirect URLs and
+ * magic-link callbacks are built from whatever this resolves to, so production
+ * should still set NEXT_PUBLIC_SITE_URL to the real domain.
+ */
+const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
+const siteFallback = vercelUrl ? `https://${vercelUrl}` : "http://localhost:3000";
+
+const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL?.trim();
 
 const parsed = publicSchema.safeParse({
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  NEXT_PUBLIC_SITE_URL: orFallback(
+    "NEXT_PUBLIC_SITE_URL",
+    process.env.NEXT_PUBLIC_SITE_URL,
+    siteFallback,
+  ),
+  NEXT_PUBLIC_SUPABASE_URL: orFallback(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    "https://unconfigured.supabase.co",
+  ),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: orFallback(
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    "sb_publishable_unconfigured",
+  ),
+  NEXT_PUBLIC_SANITY_PROJECT_ID: orFallback(
+    "NEXT_PUBLIC_SANITY_PROJECT_ID",
+    process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    "unconfigured",
+  ),
+  NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET?.trim() || undefined,
   ...(studioUrl ? { NEXT_PUBLIC_SANITY_STUDIO_URL: studioUrl } : {}),
 });
 
@@ -43,3 +83,6 @@ if (!parsed.success) {
 }
 
 export const publicEnv = parsed.data;
+
+/** Public variables that were empty or missing at build time. */
+export const unconfiguredPublicVars: readonly string[] = unconfiguredNames;

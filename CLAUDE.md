@@ -102,9 +102,11 @@ Non-negotiable:
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `RESEND_API_KEY` and `ADMIN_API_TOKEN` must never appear in a `NEXT_PUBLIC_`
   variable, a client component, or a log line.
-- No `process.env` outside `src/env.ts`, `src/env.public.ts`,
-  `src/proxy.ts` and the Sanity config files. Everything else imports the
-  validated object.
+- No `process.env` outside `src/env.ts`, `src/env.public.ts` and the Sanity
+  config files. Everything else imports the validated object. `src/proxy.ts`
+  used to be an exception and that is exactly how an unset variable turned
+  every route into a 500: it read the raw empty string instead of the
+  validated stand-in.
 - No `supabaseAdmin` in a page, a component, or a route handler that has not
   already verified its caller. Today there are two legitimate call sites.
 - No `any`, and no `!` non-null assertion on data from Supabase, Sanity, Stripe

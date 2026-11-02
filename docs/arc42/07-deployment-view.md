@@ -54,6 +54,13 @@ dev data, which is recorded in section 11.
 
 ## Environment variables
 
+Every variable may be created empty. The deployment boots and renders, and each
+feature degrades until its key is filled in, so a project can be created and
+wired before any account exists. Empty secrets get random bytes at boot rather
+than the committed placeholders, so an unconfigured deployment rejects every
+admin token, webhook signature and unsubscribe link instead of accepting a
+value published in this repository.
+
 Set every key from `.env.example` in the Vercel project. Two rules:
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
@@ -63,7 +70,9 @@ Set every key from `.env.example` in the Vercel project. Two rules:
   an inbox, so generate it once per environment with
   `openssl rand -base64 32` and leave it alone.
 - `NEXT_PUBLIC_SITE_URL` must match the deployment it runs on, because Stripe
-  redirect URLs and magic-link callbacks are built from it.
+  redirect URLs and magic-link callbacks are built from it. Left empty it falls
+  back to `NEXT_PUBLIC_VERCEL_URL`, which is right for a preview and wrong for
+  production on a custom domain.
 
 ## Deploy steps for a fresh copy
 
