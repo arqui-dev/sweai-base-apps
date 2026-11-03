@@ -1,20 +1,23 @@
 import Link from "next/link";
+import { PRIMARY_LINKS } from "@/components/nav-links";
+import { SiteMenu } from "@/components/site-menu";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import type { ThemeId } from "@/components/theme/themes";
-import { getCurrentUser } from "@/lib/supabase/server";
 import { btn } from "@/components/ui/styles";
-
-const LINKS = [
-  { href: "/blog", label: "Blog" },
-  { href: "/subscribe", label: "Newsletter" },
-  { href: "/early-access", label: "Early access" },
-  { href: "/themes", label: "Designs" },
-  { href: "/coffee", label: "Buy a coffee" },
-  { href: "/cart", label: "Cart" },
-] as const;
+import { getCurrentUser } from "@/lib/supabase/server";
 
 export async function Nav({ theme }: { theme: ThemeId }) {
   const user = await getCurrentUser();
+
+  const account = user ? (
+    <Link href="/profile" className="hover:text-accent text-sm">
+      {user.email}
+    </Link>
+  ) : (
+    <Link href="/login" className={btn("ghost")}>
+      Sign in
+    </Link>
+  );
 
   return (
     <header className="border-b-(length:--border-width) border-border bg-bg">
@@ -26,8 +29,8 @@ export async function Nav({ theme }: { theme: ThemeId }) {
           Hire Service
         </Link>
 
-        <ul className="hidden gap-4 text-sm text-muted sm:flex">
-          {LINKS.map((link) => (
+        <ul className="text-muted hidden gap-4 text-sm sm:flex">
+          {PRIMARY_LINKS.map((link) => (
             <li key={link.href}>
               <Link href={link.href} className="hover:text-ink">
                 {link.label}
@@ -38,15 +41,8 @@ export async function Nav({ theme }: { theme: ThemeId }) {
 
         <div className="ms-auto flex items-center gap-3">
           <ThemeSwitcher current={theme} />
-          {user ? (
-            <Link href="/profile" className="text-sm hover:text-accent">
-              {user.email}
-            </Link>
-          ) : (
-            <Link href="/login" className={btn("ghost")}>
-              Sign in
-            </Link>
-          )}
+          <div className="hidden sm:block">{account}</div>
+          <SiteMenu account={account} />
         </div>
       </nav>
     </header>

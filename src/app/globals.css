@@ -35,6 +35,32 @@ h3,
   letter-spacing: var(--display-tracking);
 }
 
+/*
+ * The hamburger panel. A popover lands in the top layer with user-agent styles
+ * for inset, margin and border, so those have to be overridden rather than
+ * merely added to.
+ */
+.site-menu-panel {
+  position: fixed;
+  inset: auto;
+  top: 3.5rem;
+  right: max(1rem, env(safe-area-inset-right));
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.site-menu-panel::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+
 /* Visible focus in every theme. Browsers drop the default ring on dark accents. */
 :focus-visible {
   outline: 2px solid var(--accent);
