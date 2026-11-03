@@ -40,6 +40,20 @@ flowchart TB
   st -->|webhook to /api/stripe/webhook| fn
 ```
 
+## Deployables
+
+Three, on two platforms ([ADR-008](../adr/ADR-008-one-vercel-project-per-deployable.md)).
+
+| Deployable | Where | Built by | Needs env vars |
+|------------|-------|----------|----------------|
+| The application | Vercel project `sweai-base-apps` | `next build` | Yes, all of them |
+| Storybook catalogue | Vercel project `sweai-storybook`, same repository | `npm run storybook:build` into `storybook-static` | No. No story imports `env.ts` or `env.public.ts` |
+| Sanity Studio | `*.sanity.studio`, hosted by Sanity | `npx sanity deploy` | No |
+
+The repository is not a monorepo, deliberately. The trigger for converting is a
+second deployable application, and it is written out in ADR-008 so the decision
+does not get re-argued from scratch.
+
 ## Environments
 
 | Environment | URL | Supabase | Sanity dataset | Stripe |

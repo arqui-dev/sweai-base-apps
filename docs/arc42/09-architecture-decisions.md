@@ -13,6 +13,7 @@ at merge time.
 | [ADR-005](../adr/ADR-005-paywall-enforced-in-the-groq-query.md) | Enforce the paywall in the GROQ query | Accepted |
 | [ADR-006](../adr/ADR-006-hosted-sanity-studio.md) | Host the Sanity Studio on Sanity instead of embedding it | Accepted |
 | [ADR-007](../adr/ADR-007-dependency-and-vulnerability-policy.md) | Dependency and vulnerability policy: zero runtime vulnerabilities, enforced in CI | Accepted |
+| [ADR-008](../adr/ADR-008-one-vercel-project-per-deployable.md) | One Vercel project per deployable, and no monorepo until a second app exists | Accepted |
 
 ## Open questions
 

@@ -152,7 +152,7 @@ src/
 supabase/schema.sql    four tables, five policies, one trigger
 sanity/schema/         the post document type, deployed with `npx sanity deploy`
 docs/arc42/            architecture, twelve sections, Mermaid C4
-docs/adr/              seven decision records
+docs/adr/              eight decision records
 docs/personas.md       five personas and the decisions made for them
 docs/use-cases.md      thirteen use cases with their designed failure
 .claude/agents/        six project agents
@@ -167,6 +167,7 @@ docs/use-cases.md      thirteen use cases with their designed failure
 - [Dependency and vulnerability policy](docs/adr/ADR-007-dependency-and-vulnerability-policy.md),
   and the [dependency register](docs/dependencies.md) justifying every library
 - [AI roadmap](docs/ai-roadmap.md), the agents and checks still to build
+- [Deployables and the monorepo trigger](docs/adr/ADR-008-one-vercel-project-per-deployable.md)
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings
   and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
@@ -176,6 +177,8 @@ docs/use-cases.md      thirteen use cases with their designed failure
 ```bash
 npm run storybook
 ```
+
+Published at [sweai-storybook.vercel.app](https://sweai-storybook.vercel.app).
 
 Storybook is the catalogue and the place to build new UI from. Every story runs
 as a Chromium test inside `npm run test`, with the accessibility addon set to
