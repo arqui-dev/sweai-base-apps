@@ -1,4 +1,12 @@
--- Hire Service schema. Apply with the Supabase SQL editor or `supabase db push`.
+-- Hire Service schema. Paste the whole file into the Supabase SQL editor.
+--
+-- `supabase db push` does NOT apply this file: it pushes migrations from
+-- supabase/migrations/, which this project does not use yet. Adopting that
+-- folder is item A3 in docs/ai-roadmap.md.
+--
+-- Safe to re-run. Every statement is idempotent: tables and indexes use
+-- `if not exists`, the function is `create or replace`, and each policy and
+-- trigger is dropped first.
 -- Every table has row level security on with no permissive default, so a leaked
 -- publishable key grants nothing beyond what a policy below explicitly allows.
 
@@ -14,9 +22,11 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "profiles: read own" on public.profiles;
 create policy "profiles: read own" on public.profiles
   for select using (auth.uid() = id);
 
+drop policy if exists "profiles: update own" on public.profiles;
 create policy "profiles: update own" on public.profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);
 
@@ -55,6 +65,7 @@ alter table public.newsletter_subscribers enable row level security;
 
 -- The profile page shows subscription status, so a signed-in user may read the
 -- single row that carries their own address. Writes stay with the service role.
+drop policy if exists "subscribers: read own" on public.newsletter_subscribers;
 create policy "subscribers: read own" on public.newsletter_subscribers
   for select using (auth.email() = email);
 
@@ -101,6 +112,7 @@ alter table public.entitlements enable row level security;
 
 -- Matching on email as well as user_id is what lets a guest who paid first and
 -- signed up later keep their access.
+drop policy if exists "entitlements: read own" on public.entitlements;
 create policy "entitlements: read own" on public.entitlements
   for select using (auth.uid() = user_id or auth.email() = email);
 

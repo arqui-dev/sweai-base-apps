@@ -98,9 +98,10 @@ Set every key from `.env.example` in the Vercel project. Two rules:
 ## Deploy steps for a fresh copy
 
 ```bash
-# 1. Database
-#    Paste supabase/schema.sql into the Supabase SQL editor, or:
-supabase db push
+# 1. Database: paste supabase/schema.sql into the Supabase SQL editor.
+#    `supabase db push` does not apply it. That command pushes migrations from
+#    supabase/migrations/, which this project does not use yet (roadmap A3).
+#    The file is safe to re-run.
 
 # 2. Content
 npx sanity dataset create production   # once per project
