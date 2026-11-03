@@ -97,6 +97,48 @@ Non-negotiable:
   recent maintainer change, a typosquat-adjacent name, or a git dependency on a
   branch rather than a commit SHA.
 
+## Frontend components
+
+Storybook is the catalogue: `npm run storybook`. Every story runs as a Chromium
+test under `npm run test`, with the a11y addon at `error`, so a component that
+stops rendering or grows an accessibility violation fails the build.
+
+- **Build from what is catalogued.** Before writing new markup, look in
+  `src/components/` and in Storybook. Extend an existing component or primitive
+  rather than restating its classes somewhere new.
+- **A new component ships with a story**, in the same commit, covering the
+  states that differ: empty, filled, signed in, anonymous, error.
+- **Primitives before classes.** `btn`, `card`, `input`, `label` and `section`
+  in `src/components/ui/styles.ts` are the vocabulary. A one-off class list that
+  duplicates one of them is the thing to delete.
+- **No colour literal in a component.** Only theme tokens, so all five presets
+  come from one tree. Check a story in every theme with the toolbar: if it
+  looks right in one and wrong in another, the component reached past its
+  tokens.
+- **Links come from `src/components/nav-links.ts`.** Adding a page means adding
+  it there, which is also what makes `typedRoutes` catch a dead link.
+
+## Commit messages
+
+Conventional Commits, short, present tense, subject only.
+
+```
+feat: add storybook
+feat: add hamburger nav menu
+fix: stop swallowing query failures
+docs: record the dependency policy
+```
+
+- One line. No body unless a reviewer genuinely cannot act without it.
+- Present tense, imperative: `add`, not `added` or `adds`.
+- Under 60 characters. Lowercase after the type.
+- Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `perf`.
+- One concern per commit. Two concerns are two commits.
+
+This overrides the commit-body guidance in
+`../ai-software-engineering/guidelines/writing-style.md`: the reasoning belongs
+in an ADR or a code comment, where it stays findable.
+
 ## Forbidden patterns
 
 - `SUPABASE_SECRET_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
@@ -140,6 +182,7 @@ Non-negotiable:
 - No pushing a committed placeholder to a deployed environment. Empty is safer:
   unset secrets get random bytes at boot and fail closed. `npm run env:push`
   enforces this; do not work around it.
+- No new component without a story in the same commit.
 - No commented-out code. Delete it; git remembers.
 
 ## Verification
@@ -154,7 +197,12 @@ npm run build
 npm run audit:runtime  # gated: any advisory fails
 npm run audit:all      # reported: build-time tooling, not gated
 npm run scan:secrets   # needs the gitleaks binary; CI is the enforcing gate
+npm run storybook      # the component catalogue, port 6006
 ```
+
+`npm run test` covers both projects in `vitest.config.mts`: the node unit tests
+and every story as a Chromium browser test. CI installs Chromium before running
+it.
 
 `scan:secrets` reads `.gitleaks.toml` and `.gitleaksignore`. Run it before
 pushing anything that adds a key-shaped string. CI runs it over full history

@@ -4,8 +4,16 @@ Every production dependency, why it is here, and what it saved. Required by
 [ADR-007](adr/ADR-007-dependency-and-vulnerability-policy.md): a dependency
 without a row is a review failure.
 
-**Runtime tree: 12 direct, 159 unique packages, 0 known vulnerabilities**
-(`npm run audit:runtime`).
+**Runtime tree: 12 direct, 117 top-level and 365 packages in a real
+`npm ci --omit=dev`, 0 known vulnerabilities** (`npm run audit:runtime`).
+
+The counts come from installing with `--omit=dev` into a clean directory, not
+from `npm ls --omit=dev --all`. That command follows optional peer edges and
+reports `vitest`, `vite`, `playwright` and every `esbuild` platform binary
+underneath `@sanity/client`, which is a traversal artifact rather than what
+ships. `vitest` and `vite` do land in a production install, through an optional
+peer on `get-it`; that pre-dates Storybook and is recorded in
+[section 11](arc42/11-risks-and-technical-debt.md).
 
 ## Production
 
@@ -23,6 +31,10 @@ without a row is a review failure.
 | `resend` | Transactional and batch email | An SMTP client and a mail server | 5 | No smaller option that still batches |
 | `zod` | Validation at every trust boundary, including env | Hand-written type guards for 7 schemas, with no inference | 0 | Zero-dependency, and the alternative is a type-guard layer that silently drifts from the types |
 
+Transitive counts per package were removed from this table when the measurement
+above showed them to be peer-traversal artifacts. The honest figure is the
+whole-tree count at the top.
+
 ## Build and editor only
 
 Not in the runtime tree. `npm audit` reports findings here; they are not gated,
@@ -36,7 +48,15 @@ roadmap item for driving this to zero.
 | `typescript`, `@types/*` | Types | |
 | `eslint`, `eslint-config-next` | Lint | |
 | `tailwindcss`, `@tailwindcss/turbopack` | Styling | |
-| `vitest` | Tests | |
+| `vitest` | Tests, both projects in `vitest.config.mts` | |
+| `storybook`, `@storybook/nextjs-vite` | The component catalogue and its builder | Chosen over a hand-rolled preview page: stories double as the browser test suite |
+| `@storybook/addon-vitest` | Runs every story as a Chromium test under `npm run test` | This is what makes the catalogue load-bearing instead of decorative |
+| `@storybook/addon-a11y` | axe on every story, set to `error` | A violation fails the test run rather than sitting in a panel |
+| `@storybook/addon-docs` | Autodocs from the story files | |
+| `eslint-plugin-storybook` | Lint rules for story files | |
+| `vite` | Storybook's builder | Pinned `^8.3.5`. Storybook's init wrote `latest`, which ADR-007 forbids |
+| `@vitest/browser-playwright`, `playwright` | Chromium driver for the story tests | `playwright` pinned `^1.64.1`, also written as `latest` by the init |
+| `@tailwindcss/vite` | Tailwind inside Storybook's Vite build | The app uses `@tailwindcss/turbopack`; without this one `@import "tailwindcss"` passes through untransformed and every utility silently becomes a no-op |
 
 ## Deliberately not added
 
@@ -56,6 +76,14 @@ register: it is cheaper to read than to re-litigate.
 | A rate limiter | Brake on the public forms | A `Map` and a fixed window, with its per-instance ceiling written in the file |
 | A crypto helper | HMAC for unsubscribe links, constant-time compare | `node:crypto` |
 | `next-sanity` | Queries plus the embedded Studio | `@sanity/client`, after it cost 21 vulnerabilities ([ADR-006](adr/ADR-006-hosted-sanity-studio.md)) |
+
+| A component catalogue page | Reviewing components in isolation | Storybook, because the stories also run as the browser test suite |
+
+## Overrides
+
+| Override | Why |
+|----------|-----|
+| `vite-plus: 1.4.0` | `storybook@10.4.0` and later declare a peer `vite-plus: "^0.1.15 \|\| ^0.2.0"`, and the only published version is `1.4.0`. Nothing satisfies the range, so npm 10.9.3 reaches a null node in `#loadPeerSet` and dies with `Cannot read properties of null (reading 'edgesOut')` instead of reporting an unmet peer. The override unblocks resolution without installing anything: `npm ls vite-plus` comes back empty. Remove it when Storybook corrects the range. |
 
 ## Adding one
 

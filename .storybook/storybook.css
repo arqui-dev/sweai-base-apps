@@ -1,0 +1,10 @@
+/*
+ * The app gets these three from `next/font` in the root layout. Storybook has
+ * no layout, so without them every theme falls back to the same system font
+ * and the type differences between presets disappear.
+ */
+:root {
+  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display-serif: ui-serif, Georgia, "Times New Roman", serif;
+}

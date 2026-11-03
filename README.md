@@ -118,6 +118,8 @@ npm run audit:all     # reported: build-time tooling, not gated
 npm run scan:secrets  # gitleaks over full history (needs the gitleaks binary)
 npm run env:push      # .env.local -> Vercel (development + preview)
 npm run env:pull      # Vercel -> .env.local
+npm run storybook     # component catalogue on :6006
+npm run storybook:build
 ```
 
 CI runs `verify` plus `build` with placeholder credentials, and a pinned
@@ -143,7 +145,8 @@ src/
   features/            the rules: schemas, services, the paywall gate
   lib/                 one configured client per external service
   shared/              Result, logger, request body parsing, setup diagnostics
-  components/          presentation, no business logic
+  components/          presentation, no business logic, each with a *.stories.tsx
+  components/nav-links.ts  every navigable page, read by the header and the menu
   env.ts               the only reader of secret env vars
   proxy.ts             session refresh, protected-route redirect (was middleware.ts)
 supabase/schema.sql    four tables, five policies, one trigger
@@ -167,6 +170,21 @@ docs/use-cases.md      thirteen use cases with their designed failure
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings
   and what Invoicing still needs
 - [Rules for AI agents](CLAUDE.md)
+
+## Components
+
+```bash
+npm run storybook
+```
+
+Storybook is the catalogue and the place to build new UI from. Every story runs
+as a Chromium test inside `npm run test`, with the accessibility addon set to
+`error`, so a component that stops rendering or picks up a violation fails the
+build rather than the review.
+
+The theme toolbar re-skins every story. Because a component reads only CSS
+custom properties, one that looks right in one preset and wrong in another is
+reaching past its tokens, and the toolbar is how you catch it.
 
 ## Environment variables on Vercel
 

@@ -48,6 +48,11 @@ jobs:
       # disagree instead of silently resolving something new.
       - run: npm ci
 
+      # The storybook vitest project runs every story in Chromium, so the
+      # browser has to exist before `npm run test`.
+      - name: Install Chromium for the story tests
+        run: npx playwright install --with-deps chromium
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -59,6 +64,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Build Storybook
+        run: npm run storybook:build
 
   dependencies:
     runs-on: ubuntu-latest

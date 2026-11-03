@@ -15,7 +15,9 @@
     "audit:runtime": "npm audit --omit=dev --audit-level=info",
     "audit:all": "npm audit",
     "env:push": "./scripts/env-push.sh",
-    "env:pull": "vercel env pull .env.local"
+    "env:pull": "vercel env pull .env.local",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",
@@ -33,19 +35,33 @@
   },
   "devDependencies": {
     "@sanity/vision": "^6.21.0",
+    "@storybook/addon-a11y": "^10.6.5",
+    "@storybook/addon-docs": "^10.6.5",
+    "@storybook/addon-vitest": "^10.6.5",
+    "@storybook/nextjs-vite": "^10.6.5",
     "@tailwindcss/turbopack": "^4",
+    "@tailwindcss/vite": "^4.3.4",
     "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/browser-playwright": "^5.0.5",
+    "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "eslint-plugin-storybook": "^10.6.5",
+    "playwright": "^1.64.1",
     "sanity": "^6.21.0",
+    "storybook": "^10.6.5",
     "styled-components": "^6.6.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "overrides": {
+    "vite-plus": "1.4.0"
   }
 }
