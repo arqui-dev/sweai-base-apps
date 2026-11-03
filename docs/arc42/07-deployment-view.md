@@ -50,6 +50,9 @@ Three, on two platforms ([ADR-008](../adr/ADR-008-one-vercel-project-per-deploya
 | Storybook catalogue | Vercel project `sweai-storybook`, same repository | `npm run storybook:build` into `storybook-static` | No. No story imports `env.ts` or `env.public.ts` |
 | Sanity Studio | `*.sanity.studio`, hosted by Sanity | `npx sanity deploy` | No |
 
+`arqui.dev`, the company landing page, is a different repository and a
+different Vercel project. Nothing here serves it.
+
 The repository is not a monorepo, deliberately. The trigger for converting is a
 second deployable application, and it is written out in ADR-008 so the decision
 does not get re-argued from scratch.

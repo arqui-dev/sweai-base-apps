@@ -119,8 +119,12 @@ component between products.
   Storybook build when no component changed, which is a setting rather than a
   restructuring.
 - `arquidev-sweai`, a third project pointing at this repository with 21 failed
-  deployments and no successful one, is left in place by the owner's decision.
-  It continues to fail on every push. Deleting it is the cleanup.
+  deployments and no successful one, has been deleted. Two projects now build
+  from this repository and both succeed.
+- `arqui-dev` is a separate project from a separate repository, Vite rather
+  than Next, and serves the company landing page. It is outside this
+  repository's scope and stays that way: this repository is the study base, not
+  the business site.
 - The deployment view in section 7 now lists three deployables.
 
 ## Sources
