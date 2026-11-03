@@ -11,7 +11,8 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(ts|tsx)"],
   addons: ["@storybook/addon-vitest", "@storybook/addon-a11y", "@storybook/addon-docs"],
   framework: "@storybook/nextjs-vite",
-  staticDirs: ["../public"],
+  // No staticDirs: `public/` holds nothing the stories use, and it is not
+  // tracked by git because it is empty, so pointing at it fails a fresh clone.
   viteFinal: async (viteConfig) => {
     viteConfig.plugins = [...(viteConfig.plugins ?? []), tailwindcss()];
     return viteConfig;
