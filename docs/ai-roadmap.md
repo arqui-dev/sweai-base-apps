@@ -7,12 +7,13 @@ inventory.
 Each item says what triggers it, what it would own, and what has to exist
 first. An item with no trigger is a preference, not a plan.
 
+Built and moved out: `security-reviewer` and `dependency-reviewer`, both now in
+`.claude/agents/`.
+
 ## Agents to build
 
 | # | Agent | Owns | Triggered by | Blocked on | Priority |
 |---|-------|------|--------------|------------|----------|
-| A1 | `security-reviewer` | Reviews a diff against OWASP Top 10:2025 and ASVS 5.0, reports findings with a traced path from entry point to sink, and refuses to pass a finding it cannot trace. Enforces [ADR-007](adr/ADR-007-dependency-and-vulnerability-policy.md) sections 1 and 2 | Any change to a route handler, `src/features/payments`, `src/proxy.ts`, `supabase/schema.sql`, or anything rendering third-party content | Nothing. This is the next one to build | High |
-| A2 | `dependency-reviewer` | Runs the deep scan in [ADR-007](adr/ADR-007-dependency-and-vulnerability-policy.md) section 5 on every new dependency: maintainers, first-publish date, install scripts, transitive count, advisories. Writes the register row | Any diff touching `package.json` or `package-lock.json` | Nothing | High |
 | A3 | `migration-writer` | Turns a change to `supabase/schema.sql` into a forward migration plus the `alter table` statements for an already-applied database, and checks RLS is enabled on anything new | A diff to `supabase/schema.sql` | Deciding whether to adopt the Supabase CLI migration folder | Medium |
 | A4 | `stripe-reviewer` | Checks payment changes against the eight findings in [the Stripe review](stripe-integration-review.md): refunds revoke access, async payment methods are handled, amounts come from server config, events are idempotent | A diff to `src/features/payments` or the webhook | F1 and F2 from the Stripe review being fixed first, so the agent has a correct baseline | Medium |
 | A5 | `a11y-reviewer` | Focus order, landmark structure, reduced motion, and the keyboard path through each flow. Contrast is a unit test and axe runs on every story, so it checks neither again | A diff to `src/components` or `src/app/(site)` | Nothing | Low, now that axe gates the stories |

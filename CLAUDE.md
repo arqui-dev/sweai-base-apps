@@ -215,6 +215,8 @@ commands in this repo.
 
 | Agent | Use when |
 |-------|----------|
+| `security-reviewer` | Any route handler, auth, money, schema, header or third-party-content change. OWASP Top 10:2025 and ASVS 5.0 |
+| `dependency-reviewer` | Any diff touching `package.json` or `package-lock.json` |
 | `paywall-guardian` | Any change under `src/features/posts`, `src/features/payments`, or a component receiving a `Post` |
 | `rls-reviewer` | Any change to `supabase/schema.sql`, or a new table or query |
 | `theme-smith` | Adding or editing a theme |
@@ -223,7 +225,7 @@ commands in this repo.
 | `release-checker` | Before a production deploy |
 
 Agents still to build are in [`docs/ai-roadmap.md`](docs/ai-roadmap.md), highest
-priority first. `security-reviewer` and `dependency-reviewer` are next.
+priority first.
 
 ## MCP servers in use
 
