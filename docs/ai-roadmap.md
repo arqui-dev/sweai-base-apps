@@ -10,6 +10,10 @@ first. An item with no trigger is a preference, not a plan.
 Built and moved out: `security-reviewer` and `dependency-reviewer`, both now in
 `.claude/agents/`.
 
+The current inventory of everything available, and which layer owns it, is in
+[`docs/ai-tooling.md`](ai-tooling.md). This file is only what does not exist
+yet.
+
 ## Agents to build
 
 | # | Agent | Owns | Triggered by | Blocked on | Priority |

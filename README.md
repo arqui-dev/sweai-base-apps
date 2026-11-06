@@ -119,6 +119,7 @@ npm run scan:secrets  # gitleaks over full history (needs the gitleaks binary)
 npm run env:push      # .env.local -> Vercel (development + preview)
 npm run env:pull      # Vercel -> .env.local
 npm run storybook     # component catalogue on :6006
+npm run ai:inventory  # live AI tooling inventory
 npm run storybook:build
 ```
 
@@ -166,6 +167,7 @@ docs/use-cases.md      thirteen use cases with their designed failure
 - [Personas](docs/personas.md) and [use cases](docs/use-cases.md)
 - [Dependency and vulnerability policy](docs/adr/ADR-007-dependency-and-vulnerability-policy.md),
   and the [dependency register](docs/dependencies.md) justifying every library
+- [AI tooling inventory](docs/ai-tooling.md), what is available and which layer owns it
 - [AI roadmap](docs/ai-roadmap.md), the agents and checks still to build
 - [Deployables and the monorepo trigger](docs/adr/ADR-008-one-vercel-project-per-deployable.md)
 - [Stripe integration review](docs/stripe-integration-review.md), eight findings

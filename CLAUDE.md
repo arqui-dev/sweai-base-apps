@@ -225,7 +225,9 @@ commands in this repo.
 | `release-checker` | Before a production deploy |
 
 Agents still to build are in [`docs/ai-roadmap.md`](docs/ai-roadmap.md), highest
-priority first.
+priority first. Everything available, and which layer owns it, is in
+[`docs/ai-tooling.md`](docs/ai-tooling.md); run `npm run ai:inventory` before
+editing it.
 
 ## MCP servers in use
 
