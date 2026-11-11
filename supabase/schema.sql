@@ -30,6 +30,16 @@ drop policy if exists "profiles: update own" on public.profiles;
 create policy "profiles: update own" on public.profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);
 
+-- The row policy says which row you may update; it does not say which columns.
+-- Supabase grants ALL on new public tables to these roles, so without this a
+-- signed-in user could rewrite their own `email` to anyone else's address. That
+-- is only self-defacement today, because every policy reads the JWT's
+-- auth.email() rather than this column and nothing in src/ queries profiles.
+-- It becomes impersonation the day one query trusts the column as identity.
+-- Narrowing it now costs one statement; finding it later costs an incident.
+revoke update on public.profiles from anon, authenticated;
+grant update (full_name) on public.profiles to authenticated;
+
 -- Keeps profiles in step with auth.users without the app owning signup.
 create or replace function public.handle_new_user()
 returns trigger
