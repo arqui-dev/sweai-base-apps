@@ -16,16 +16,32 @@ export type SubscribeError = "STORAGE_ERROR";
  */
 export async function subscribe(
   input: SubscribeInput,
+  /**
+   * True only when the caller proved control of this mailbox, which today
+   * means a signed-in session whose email matches. Anonymous callers cannot
+   * resurrect an address that opted out: one request chooses the address, so
+   * without this anyone could put a person who unsubscribed back on the list
+   * and cause mail to be sent to them.
+   */
+  options: { readonly allowResubscribe: boolean } = { allowResubscribe: false },
 ): Promise<Result<{ alreadySubscribed: boolean }, SubscribeError>> {
   const { data: existing, error: lookupError } = await supabaseAdmin
     .from("newsletter_subscribers")
-    .select("email")
+    .select("email, unsubscribed_at")
     .eq("email", input.email)
     .maybeSingle();
 
   if (lookupError) {
     logger.error("newsletter lookup failed", { reason: lookupError.message });
     return err("STORAGE_ERROR");
+  }
+
+  const optedOut = Boolean(existing?.unsubscribed_at);
+  if (optedOut && !options.allowResubscribe) {
+    // Treated as a no-op rather than an error, so the response cannot be used
+    // to tell an opted-out address from an unknown one.
+    logger.info("resubscribe refused for an opted-out address");
+    return ok({ alreadySubscribed: true });
   }
 
   const { error: upsertError } = await supabaseAdmin

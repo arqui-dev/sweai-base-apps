@@ -1,6 +1,7 @@
 import { subscribeInput } from "@/features/newsletter/newsletter.schema";
 import { subscribe } from "@/features/newsletter/newsletter.service";
 import { allow, clientKey } from "@/lib/rate-limit";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { setupHint } from "@/shared/config-check";
 import { json, parseBody } from "@/shared/http";
 import { logger } from "@/shared/logger";
@@ -16,14 +17,19 @@ export async function POST(request: Request): Promise<Response> {
     return json({ message: parsed.error.message, fields: parsed.error.fields }, parsed.error.status);
   }
 
-  const result = await subscribe(parsed.value);
+  // allowResubscribe only for a session that owns the address. A magic-link
+  // session proves the mailbox was reachable, which is the same bar the
+  // unsubscribe link clears.
+  const user = await getCurrentUser();
+  const ownsAddress = user?.email?.toLowerCase() === parsed.value.email;
+
+  const result = await subscribe(parsed.value, { allowResubscribe: Boolean(ownsAddress) });
   if (!result.ok) {
     return json({ message: "Could not save your address.", hint: setupHint() }, 503);
   }
 
-  return json({
-    message: result.value.alreadySubscribed
-      ? "You are already on the list."
-      : "Check your inbox to confirm.",
-  });
+  // One message for every outcome. Two messages made this endpoint an
+  // enumeration oracle: an anonymous caller could tell a subscribed address
+  // from an unknown one.
+  return json({ message: "Check your inbox to confirm." });
 }
