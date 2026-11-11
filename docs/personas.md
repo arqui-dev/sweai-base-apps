@@ -67,7 +67,7 @@ months, could be a contractor, could be an AI agent.
 | Arrives at | `README.md`, then `docs/arc42/` |
 | Wants | To add a feature without reverse-engineering five integrations |
 | Will not tolerate | Abstractions with no second implementation, or docs that describe a system that no longer exists |
-| Serve them with | arc42 sections tied to real file paths, five ADRs with the reversal condition stated, `ponytail:` comments naming each shortcut's ceiling, and `npm run verify` that passes on a clean clone |
+| Serve them with | arc42 sections tied to real file paths, eight ADRs with the reversal condition stated, `ponytail:` comments naming each shortcut's ceiling, and `npm run verify` that passes on a clean clone |
 | Served when | A new capture page ships with no migration and no new dependency |
 
 ## How the personas map to decisions
@@ -77,5 +77,5 @@ months, could be a contractor, could be an AI agent.
 | Mara | No modal, no popup, excerpt-first post layout |
 | Dan | Guest checkout, email-keyed entitlements, single payment and no subscription |
 | Priya | Three concrete services, one required form field, lead `note` captured |
-| Theo | Embedded Studio, `isPremium` boolean, required excerpt, 60s revalidate |
+| Theo | Sanity-hosted Studio, `isPremium` boolean, required excerpt, 60s revalidate |
 | Alex | arc42 plus ADRs, `features/lib/shared` split, one table for all lead lists |

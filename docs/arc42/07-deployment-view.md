@@ -5,14 +5,16 @@ flowchart TB
   dev["Developer<br/>npm run verify"] -->|git push| gh[GitHub repository]
 
   subgraph CI["GitHub Actions"]
-    v["verify: typecheck, lint, test, build<br/>placeholder env only"]
+    v["verify: typecheck, lint, test,<br/>next build, storybook build<br/>Chromium installed, placeholder env only"]
+    d["dependencies: npm audit --omit=dev<br/>gated at --audit-level=info"]
     s["secrets: pinned gitleaks CLI<br/>over full history"]
   end
 
   gh --> v
+  gh --> d
   gh --> s
 
-  subgraph VC["Vercel project"]
+  subgraph VC["Vercel project sweai-base-apps"]
     prev["Preview deployment<br/>one per pull request"]
     prod["Production deployment<br/>main branch"]
     edge["Proxy<br/>session refresh"]
@@ -20,8 +22,13 @@ flowchart TB
     stat["Static assets"]
   end
 
+  subgraph SB["Vercel project sweai-storybook"]
+    cat["Component catalogue<br/>storybook-static, no env vars"]
+  end
+
   gh -->|Git integration| prev
   gh -->|merge to main| prod
+  gh -->|every push| cat
   prod --- edge
   prod --- fn
   prod --- stat

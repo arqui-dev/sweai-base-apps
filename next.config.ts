@@ -2,9 +2,13 @@ import type { NextConfig } from "next";
 
 /**
  * Enforced on every response. The CSP is report-only on purpose: Next injects
- * inline bootstrap scripts and Sanity Studio needs `unsafe-eval`, so enforcing
- * a policy before reading real reports breaks the app. Collect reports, then
- * flip the header name to `Content-Security-Policy`.
+ * inline bootstrap scripts, so enforcing a policy before reading real reports
+ * breaks the app. Collect reports, then flip the header name to
+ * `Content-Security-Policy`.
+ *
+ * The `unsafe-eval` in script-src is left over from the embedded Sanity Studio,
+ * which moved to Sanity's own hosting in ADR-006. Nothing here needs it now, so
+ * it should be dropped when the reports are read.
  */
 const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },

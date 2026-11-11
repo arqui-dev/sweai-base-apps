@@ -16,6 +16,8 @@ the current list.
 | No `user_id` backfill on signup | `supabase/schema.sql` | Entitlement rows keep a null `user_id` for guest buyers | A report needs to join entitlements to profiles by id |
 | `cacheComponents` off | `next.config.ts` | Every page is server-rendered on demand | A route is genuinely static and build or response time hurts |
 | Campaign send has no scheduler | `POST /api/newsletter/send` | Sends are manual curl calls | More than one campaign a month |
+| Hamburger menu is the Popover API, no JavaScript | `src/components/site-menu.tsx` | Light dismiss and focus handling are the browser's, so neither is tunable | A panel needs animation or state a popover cannot express |
+| UI primitives are class-string helpers, not components | `src/components/ui/styles.ts` | A primitive cannot hold its own state | One of them needs state; promote that one only |
 
 ## Risks
 
@@ -31,8 +33,9 @@ the current list.
 | The hosted Studio drifts from the schema in git | Editors see fields that no longer match what the queries read | The schema is version controlled, and `npx sanity deploy` is one command | Add the deploy to a release checklist the first time it is forgotten |
 | `NEWSLETTER_SECRET` rotation breaks mailed unsubscribe links | Recipients see "not valid" and cannot leave | Documented as rotate-never in section 7, and the profile page carries a freshly signed link | A compromise forces rotation: accept both the old and new secret for one mailing cycle |
 | A new placeholder is added without allowlisting it | The secrets job fails and the real signal gets ignored | `.gitleaks.toml` and CLAUDE.md list every placeholder, and the allowlist is value-scoped so it cannot hide a real key | Placeholders outgrow a hand-maintained list |
-| Build-time `npm audit` is reported, not gated | A compromised build dependency could affect a build | Not reachable from a request; `npm ci`, SHA-pinned actions, checksum-verified downloads | Item C3 in [the roadmap](../ai-roadmap.md): when `@sanity/cli` ships a clean tree, collapse to one strict gate |
-| Row level security has no automated test | A policy regression fails silently as an empty list | Policies are short and reviewed; `rls-reviewer` exists | Item C2 in the roadmap, needs Postgres in CI |
+| Build-time `npm audit` is reported, not gated | A compromised build dependency could affect a build | None of the 32 findings reach a request: the advisory roots are `js-yaml`, `smol-toml`, `undici`, `glob` and `minimatch`, none of which exists in the 78-package production install. `npm ci`, SHA-pinned actions, checksum-verified downloads | Three chains feed it: the Sanity CLI (19 findings), `eslint-config-next` (7) and Storybook (6). Collapsing to one strict gate needs all three clean, not just Sanity |
+| Row level security has no automated test | A policy regression fails silently as an empty list | Policies are short and reviewed by hand. An `rls-reviewer` definition exists in `.claude/agents/` but has never been executed, so it is not a control yet | Item C2 in the roadmap, needs Postgres in CI |
+| `vitest` and `vite` land in a production install | Test tooling ships in the runtime tree, so an advisory against either fails `audit:runtime` | They arrive through an optional peer on `get-it` under `@sanity/client`, not from a direct dependency, and the tree holds 0 known vulnerabilities. Recorded in [the register](../dependencies.md) | An advisory lands on either, or `@sanity/client` drops the optional peer |
 | No uptime or error alerting | A broken grant path could go unnoticed | Vercel logs | The site stops being a study project |
 
 ## Known gaps, by request

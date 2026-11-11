@@ -219,6 +219,11 @@ Set in `next.config.ts` for every route: `nosniff`, `SAMEORIGIN`,
 microphone and geolocation, and HSTS with a two-year max-age.
 
 The CSP ships as `Content-Security-Policy-Report-Only`. Next injects inline
-bootstrap scripts and Sanity Studio needs `unsafe-eval`, so enforcing before
-reading real reports breaks the application. The header name is the only thing
-that changes when the reports come back clean.
+bootstrap scripts, so enforcing before reading real reports breaks the
+application. The header name is the only thing that changes when the reports
+come back clean.
+
+`script-src` still allows `unsafe-eval`, which the embedded Studio needed. The
+Studio left this domain in [ADR-006](../adr/ADR-006-hosted-sanity-studio.md),
+so nothing served here is known to need it any more, and dropping it is part of
+reading the reports.

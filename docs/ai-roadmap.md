@@ -1,8 +1,8 @@
 # AI roadmap
 
-Agents and automated checks still to build. The repository already has six
-agents in [`.claude/agents/`](../.claude/agents); this is the backlog, not the
-inventory.
+Agents and automated checks still to build. The repository already has eight
+agent definitions in [`.claude/agents/`](../.claude/agents); this is the
+backlog, not the inventory.
 
 Each item says what triggers it, what it would own, and what has to exist
 first. An item with no trigger is a preference, not a plan.

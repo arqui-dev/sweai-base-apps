@@ -1,6 +1,6 @@
 # Use cases
 
-Thirteen use cases. Each names its actor, its trigger, the code that implements
+Fourteen use cases. Each names its actor, its trigger, the code that implements
 it, and the one failure worth designing for. "Checked by" names the test or the
 mechanism that keeps it honest.
 
@@ -13,6 +13,7 @@ flowchart LR
   V --> UC6[UC-06 Join a lead list]
   V --> UC11[UC-11 Switch theme]
   V --> UC13[UC-13 Unsubscribe]
+  V --> UC14[UC-14 Find a page from the menu]
 
   R((Reader)) --> UC4[UC-04 Sign in with a magic link]
   R --> UC7[UC-07 Read a premium post]
@@ -169,3 +170,14 @@ flowchart LR
 | Outcome | `unsubscribed_at` set, row kept, campaign query stops selecting the address |
 | Designed failure | A link scanner prefetching the URL, or someone unsubscribing a guessed address. The endpoint is POST only, and the token is an HMAC over the address compared with `timingSafeEqual` |
 | Checked by | `unsubscribe.test.ts`, five cases including a token minted for a different address |
+
+## UC-14: Find a page from the menu
+
+| | |
+|---|---|
+| Actor | Any visitor, on any screen size |
+| Trigger | The hamburger button in the header |
+| Implementation | `src/components/site-menu.tsx` over the Popover API, reading `NAV_GROUPS` from `src/components/nav-links.ts`; the header renders `PRIMARY_LINKS` inline above the `sm` breakpoint |
+| Outcome | Every navigable page in three groups, Read, Support and Join, plus sign in or the signed-in email at the foot of the panel |
+| Designed failure | A page is renamed and the link rots. Both arrays are `as const`, so `typedRoutes` checks each `href` against the generated route union and the typecheck fails |
+| Checked by | `src/components/site-menu.stories.tsx`, run in Chromium with axe at `error` |

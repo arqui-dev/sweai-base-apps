@@ -9,9 +9,10 @@ Counts and connection status drift. Run `npm run ai:inventory` for the live
 picture before editing this file. The judgement about what each thing is *for*
 is written by hand, because that part cannot be generated.
 
-**Snapshot: 6 November 2026.** 8 plugins, 10 MCP servers (7 connected,
+**Snapshot: 11 November 2026.** 8 plugins, 10 MCP servers (6 connected,
 2 unauthenticated, 2 awaiting approval), 25 user skills plus 68 shipped by
-plugins, 8 agents owned by this repository.
+plugins, 8 agent definitions owned by this repository, none of them yet
+executed.
 
 ## Five layers
 
@@ -31,8 +32,13 @@ own first, because that is what we evolve.
 
 ## 1. Agents we own
 
-In `.claude/agents/`, invoked by description. These encode this project's
-invariants, which is why a generic reviewer cannot replace them.
+Eight definitions in `.claude/agents/`, invoked by description. They encode
+this project's invariants, which is why a generic reviewer cannot replace them.
+
+None has been executed. All eight were written in a session that did not
+register them, so the table below is a design and not a measured capability:
+"Fires on" means the trigger the definition declares, not a run that happened.
+Treat each row as unexercised until one has reviewed a real diff.
 
 | Agent | Model | Fires on | Owns |
 |-------|-------|----------|------|
@@ -61,7 +67,7 @@ project here.
 | `prompts/analysis/` | 2 | Ticket analysis, debug flow |
 | `prompts/adrs/` | 2 | The MADR template all eight ADRs follow |
 | `mcps/` | 5 | Setup notes for the MCP servers in use |
-| `tools/` | 2 | Plugin marketplace guide, security tooling |
+| `tools/` | 3 | Plugin marketplace guide, security tooling |
 | `templates/CLAUDE.md` | 1 | Where this repo's `CLAUDE.md` started |
 
 ## 3. MCP servers
@@ -112,7 +118,8 @@ have actually done work here, which is the useful subset.
 Three rules, or the inventory becomes a list of things nobody runs.
 
 1. A new agent gets a row in section 1 and a row in `CLAUDE.md`, and its
-   roadmap line is deleted. The roadmap tracks what does not exist yet.
+   roadmap line is deleted. The roadmap tracks what does not exist yet. A
+   definition that has never been executed says so: written is not exercised.
 2. A skill or plugin that has never done work here belongs in section 5 marked
    as unused, not in a capability claim.
 3. `npm run ai:inventory` before editing. A count written from memory is how a

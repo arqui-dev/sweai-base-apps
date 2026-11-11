@@ -19,7 +19,7 @@ Ordered. When two conflict, the higher one wins.
 | 1 | Paid content stays paid | A paywall that leaks is worse than no paywall | `posts.gate.test.ts`, and the body is resolved server-side only when entitled |
 | 2 | Reusable without rework | The whole point of a base is the second product | New capture page needs no migration; new theme needs no component change |
 | 3 | Every secret stays server-side | One leaked service-role key exposes every table | Only `src/env.ts` reads secret env; gitleaks runs in CI |
-| 4 | A new contributor ships in a day | A base nobody understands gets rewritten | arc42 docs, 11 agent and persona files, `npm run verify` |
+| 4 | A new contributor ships in a day | A base nobody understands gets rewritten | 12 arc42 sections, 8 agent definitions, 5 personas, `npm run verify` |
 | 5 | Visual range without forks | Products need different looks, not different code | Five themes over one component tree |
 
 ## Stakeholders
