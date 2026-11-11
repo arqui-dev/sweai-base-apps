@@ -31,6 +31,8 @@ async function bootWithEmptyVars() {
   vi.resetModules();
   for (const key of [...SECRET_KEYS, ...PUBLIC_KEYS]) process.env[key] = "";
   delete process.env.NEXT_PUBLIC_VERCEL_URL;
+  delete process.env.NEXT_PUBLIC_VERCEL_ENV;
+  delete process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
   return {
     server: await import("./env"),
     client: await import("./env.public"),
@@ -101,13 +103,42 @@ describe("booting with every variable empty", () => {
     expect(client.publicEnv.NEXT_PUBLIC_SANITY_DATASET).toBe("production");
   });
 
-  it("derives the site URL from the Vercel deployment when it is not set", async () => {
+  it("uses the per-deployment host on a preview, where there is no alias", async () => {
     vi.resetModules();
     for (const key of PUBLIC_KEYS) process.env[key] = "";
+    process.env.NEXT_PUBLIC_VERCEL_ENV = "preview";
     process.env.NEXT_PUBLIC_VERCEL_URL = "hire-service-abc123.vercel.app";
     const client = await import("./env.public");
     expect(client.publicEnv.NEXT_PUBLIC_SITE_URL).toBe("https://hire-service-abc123.vercel.app");
+    delete process.env.NEXT_PUBLIC_VERCEL_ENV;
     delete process.env.NEXT_PUBLIC_VERCEL_URL;
+  });
+
+  it("prefers the production alias over the per-deployment host in production", async () => {
+    // The per-deployment host sits behind deployment protection, so magic-link
+    // callbacks and Stripe redirects built from it dead-end at the SSO page.
+    vi.resetModules();
+    for (const key of PUBLIC_KEYS) process.env[key] = "";
+    process.env.NEXT_PUBLIC_VERCEL_ENV = "production";
+    process.env.NEXT_PUBLIC_VERCEL_URL = "app-orvvzauga-team.vercel.app";
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL = "app.vercel.app";
+    const client = await import("./env.public");
+    expect(client.publicEnv.NEXT_PUBLIC_SITE_URL).toBe("https://app.vercel.app");
+    delete process.env.NEXT_PUBLIC_VERCEL_ENV;
+    delete process.env.NEXT_PUBLIC_VERCEL_URL;
+    delete process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
+  });
+
+  it("still lets an explicit NEXT_PUBLIC_SITE_URL win over every fallback", async () => {
+    vi.resetModules();
+    for (const key of PUBLIC_KEYS) process.env[key] = "";
+    process.env.NEXT_PUBLIC_SITE_URL = "https://real.example.com";
+    process.env.NEXT_PUBLIC_VERCEL_ENV = "production";
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL = "app.vercel.app";
+    const client = await import("./env.public");
+    expect(client.publicEnv.NEXT_PUBLIC_SITE_URL).toBe("https://real.example.com");
+    delete process.env.NEXT_PUBLIC_VERCEL_ENV;
+    delete process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
   });
 
   it("still rejects a value that is set but malformed", async () => {

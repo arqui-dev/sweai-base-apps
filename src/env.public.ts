@@ -41,13 +41,28 @@ const publicSchema = z.object({
 });
 
 /**
- * Vercel injects NEXT_PUBLIC_VERCEL_URL on every deployment, so a preview works
- * without anyone setting the site URL by hand. Stripe redirect URLs and
- * magic-link callbacks are built from whatever this resolves to, so production
- * should still set NEXT_PUBLIC_SITE_URL to the real domain.
+ * Fallback chain for the site URL, in the order that is actually correct.
+ *
+ * NEXT_PUBLIC_VERCEL_URL is the immutable per-deployment host, not the project
+ * alias, and on a project with deployment protection it answers every
+ * anonymous request with a redirect to the Vercel SSO page. Using it in
+ * production pointed magic-link callbacks, Stripe redirects, unsubscribe links
+ * and the sitemap at a host no visitor can load. It is still the right answer
+ * for a preview, where there is no stable alias.
+ *
+ * NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL is the project's production alias,
+ * which is what production needs when nobody has set a custom domain.
  */
-const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
-const siteFallback = vercelUrl ? `https://${vercelUrl}` : "http://localhost:3000";
+const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV?.trim();
+const deploymentUrl = process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
+const productionUrl = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL?.trim();
+
+const siteFallback =
+  vercelEnv === "production" && productionUrl
+    ? `https://${productionUrl}`
+    : deploymentUrl
+      ? `https://${deploymentUrl}`
+      : "http://localhost:3000";
 
 const studioUrl = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL?.trim();
 
