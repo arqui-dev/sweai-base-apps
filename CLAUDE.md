@@ -77,9 +77,10 @@ Non-negotiable:
   the dependency or drop the feature.
 - **Review every change against OWASP Top 10:2025 and ASVS 5.0** at the level
   the change touches. Auth, authorization, money, and anything rendering
-  third-party content get it unconditionally. Invoke the `owasp-security`
-  skill; the `security-reviewer` agent that will automate this is item A1 in
-  [the roadmap](docs/ai-roadmap.md).
+  third-party content get it unconditionally. The `security-reviewer` agent
+  definition in `.claude/agents/` encodes this project's entry points and
+  invariants; until it is registered in a session, invoke the `owasp-security`
+  skill by hand.
 - **The repo must keep passing its own scans:** `npm run verify`,
   `npm run audit:runtime`, and the gitleaks history scan.
 - **Fewest dependencies, but never hand-roll** cryptography, TLS, payment

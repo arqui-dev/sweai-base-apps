@@ -3,7 +3,7 @@
 **Date:** YYYY-MM-DD
 **Status:** Draft | Ready | Building | Shipped | Closed unmet | Killed
 **Blocked on:** nothing, or the named person or decision
-**Related:** [ADR-NNN](../adr/...), [UC-NN](../use-cases.md)
+**Related:** the ADR that implements it, and the use case it changes
 
 Numbers are assigned at review, not while drafting.
 
