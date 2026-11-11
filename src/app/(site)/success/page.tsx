@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { btn, card, section } from "@/components/ui/styles";
+import { safeNextPath } from "@/shared/safe-url";
 
 export const metadata = { title: "Thank you" };
 
 export default async function SuccessPage({ searchParams }: PageProps<"/success">) {
   const params = await searchParams;
-  const next = typeof params.next === "string" && params.next.startsWith("/") ? params.next : "/blog";
+  const next = safeNextPath(params.next, "/blog");
 
   return (
     <div className={`${section()} max-w-xl`}>

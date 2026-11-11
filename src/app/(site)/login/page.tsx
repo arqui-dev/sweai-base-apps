@@ -1,5 +1,6 @@
 import { LoginForm } from "./login-form";
 import { card, section } from "@/components/ui/styles";
+import { safeNextPath } from "@/shared/safe-url";
 
 export const metadata = { title: "Sign in" };
 
@@ -10,7 +11,7 @@ const ERRORS: Record<string, string> = {
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const params = await searchParams;
-  const next = typeof params.next === "string" && params.next.startsWith("/") ? params.next : "/profile";
+  const next = safeNextPath(params.next, "/profile");
   const error = typeof params.error === "string" ? ERRORS[params.error] : undefined;
 
   return (

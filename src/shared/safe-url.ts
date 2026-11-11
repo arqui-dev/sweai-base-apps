@@ -27,3 +27,24 @@ export function safeHref(value: unknown): string {
     return "#";
   }
 }
+
+/**
+ * Sanitizes a redirect target that came from a request.
+ *
+ * `value.startsWith("/")` is not enough and three call sites used it anyway.
+ * `new URL("//evil.test", origin)` resolves to `https://evil.test/`, and a
+ * browser normalizes `/\evil.test` the same way, so both pass a naive prefix
+ * check and leave the origin (CWE-601).
+ */
+export function safeNextPath(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("/")) return fallback;
+  // Protocol-relative and the backslash variant are both off-origin.
+  if (trimmed.startsWith("//") || trimmed.startsWith("/\\")) return fallback;
+  // A control character can be stripped by the browser and change the target.
+  if (/[\u0000-\u001f\u007f]/.test(trimmed)) return fallback;
+
+  return trimmed;
+}

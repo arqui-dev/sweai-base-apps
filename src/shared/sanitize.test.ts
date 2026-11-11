@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { escapeHtml } from "./escape-html";
-import { safeHref } from "./safe-url";
+import { safeHref, safeNextPath } from "./safe-url";
 
 describe("safeHref", () => {
   it("keeps ordinary web and mail links", () => {
@@ -54,5 +54,38 @@ describe("escapeHtml", () => {
 
   it("leaves ordinary names untouched", () => {
     expect(escapeHtml("André Tonelli")).toBe("André Tonelli");
+  });
+});
+
+describe("safeNextPath", () => {
+  it("keeps a same-origin path", () => {
+    expect(safeNextPath("/blog/a-post", "/blog")).toBe("/blog/a-post");
+    expect(safeNextPath("/profile?tab=1", "/blog")).toBe("/profile?tab=1");
+  });
+
+  it("rejects the protocol-relative bypass that a prefix check lets through", () => {
+    // new URL("//evil.test", origin) resolves to https://evil.test/
+    expect(safeNextPath("//evil.test", "/blog")).toBe("/blog");
+    expect(safeNextPath("//evil.test/path", "/blog")).toBe("/blog");
+  });
+
+  it("rejects the backslash variant a browser normalizes to //", () => {
+    expect(safeNextPath("/\\evil.test", "/blog")).toBe("/blog");
+  });
+
+  it("rejects an absolute URL and a scheme", () => {
+    for (const hostile of ["https://evil.test", "javascript:alert(1)", "data:text/html,x"]) {
+      expect(safeNextPath(hostile, "/blog"), hostile).toBe("/blog");
+    }
+  });
+
+  it("rejects a control character that a browser would strip", () => {
+    expect(safeNextPath("/\u0000//evil.test", "/blog")).toBe("/blog");
+    expect(safeNextPath("/bl\u000dog", "/blog")).toBe("/blog");
+  });
+
+  it("falls back for anything that is not a string", () => {
+    expect(safeNextPath(undefined, "/blog")).toBe("/blog");
+    expect(safeNextPath(["/blog"], "/blog")).toBe("/blog");
   });
 });
