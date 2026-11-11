@@ -46,7 +46,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/browser-playwright": "^5.0.5",
-    "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "eslint-plugin-storybook": "^10.6.5",
@@ -61,8 +60,5 @@
   },
   "engines": {
     "node": ">=22.0.0"
-  },
-  "overrides": {
-    "vite-plus": "1.4.0"
   }
 }
