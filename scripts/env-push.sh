@@ -10,17 +10,24 @@
 # Auth: VERCEL_TOKEN, or the token the Vercel CLI already stored if you have
 # run `vercel login`.
 #
+# Each key is replaced, not merged: every existing row for it is deleted first,
+# so one key always resolves to one value. Vercel's upsert matches on key AND
+# target set, so without the delete, pushing the same key with a different
+# target list leaves two overlapping rows and non-deterministic resolution. If
+# a key genuinely needs different values per environment, set those in the
+# dashboard rather than here.
+#
 # Two values are never pushed, because pushing them is worse than leaving the
 # variable empty:
 #
 #   - Anything matching the committed placeholder strings. Those are public, so
 #     ADMIN_API_TOKEN=placeholder-admin-token-32-chars in production means
-#     anyone who can read this repository can authenticate to /api/newsletter/send.
-#     Empty is safe: unset secrets get random bytes at boot and fail closed.
+#     anyone who can read this repository can authenticate to
+#     /api/newsletter/send. Empty is safe: unset secrets get random bytes at
+#     boot and fail closed.
 #   - A localhost NEXT_PUBLIC_SITE_URL. Stripe redirects and magic-link
 #     callbacks are built from it, and localhost is never right on Vercel.
-#     Left empty it falls back to the deployment's own URL, which is correct
-#     for a preview; production should carry the real domain.
+#
 set -euo pipefail
 
 FILE=.env.local
@@ -62,6 +69,25 @@ is_secret() {
   esac
 }
 
+# Vercel's upsert matches on key AND target set, so pushing the same key with a
+# different target list creates a SECOND row instead of replacing the first.
+# Two runs of this script (dev+preview, then --production) left eight keys with
+# overlapping rows and non-deterministic resolution. Delete every existing row
+# for the key first, then create exactly one.
+delete_existing() {
+  local key="$1"
+  local ids
+  ids=$(curl -sS "https://api.vercel.com/v9/projects/$PROJECT/env?decrypt=false" \
+        -H "Authorization: Bearer $TOKEN" \
+    | tr '{' '\n' | grep -F "\"key\":\"$key\"" \
+    | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
+  for id in $ids; do
+    curl -sS -o /dev/null -X DELETE \
+      "https://api.vercel.com/v9/projects/$PROJECT/env/$id" \
+      -H "Authorization: Bearer $TOKEN"
+  done
+}
+
 json_escape() {
   printf '%s' "$1" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))' 2>/dev/null \
     || printf '"%s"' "$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')"
@@ -100,6 +126,8 @@ while IFS= read -r line || [ -n "$line" ]; do
   fi
 
   if is_secret "$key"; then kind=encrypted; else kind=plain; fi
+
+  delete_existing "$key"
 
   body="{\"key\":$(json_escape "$key"),\"value\":$(json_escape "$value"),\"type\":\"$kind\",\"target\":$TARGETS}"
   resp=$(curl -sS -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true" \
