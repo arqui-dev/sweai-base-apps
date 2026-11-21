@@ -78,6 +78,8 @@ export async function subscribe(
 async function sendWelcome(email: string, name?: string): Promise<void> {
   if (env.RESEND_AUDIENCE_ID) {
     await resend.contacts.create({ email, audienceId: env.RESEND_AUDIENCE_ID });
+  } else {
+    logger.info("skipped Resend audience add: RESEND_AUDIENCE_ID not configured");
   }
 
   const leave = unsubscribeUrl(email);
