@@ -232,4 +232,77 @@ editing it.
 
 ## MCP servers in use
 
-None required. The repository is self-contained.
+None required. The repository is self-contained. `plugin:stripe:stripe` and
+`plugin:vercel:vercel` are configured but unauthenticated, so neither is a fact
+source for a run.
+
+## Environments and promotion order
+
+```
+local -> preview (one per pull request) -> production (main)
+```
+
+No ring or canary layer. Production is a single Vercel project,
+`sweai-base-apps`; the component catalogue deploys separately to
+`sweai-storybook` from the same repository ([ADR-008](docs/adr/ADR-008-one-vercel-project-per-deployable.md)).
+
+Preview and production share one environment variable row for every secret, so a
+live key cannot reach production without also reaching preview. Split those rows
+before any live credential is set.
+
+## Ticket tracker and conventions
+
+- **Tracker:** none. Work items live in `docs/product/roadmap.md` and
+  `docs/ai-roadmap.md`. An agent that needs a ticket id reports `UNTRACKED`
+  rather than inventing one.
+- **Branch naming:** `<type>/<slug>`, or commit straight to `main` for a study
+  base with one maintainer.
+- **Commit subject:** `<type>: <subject>`, present tense, subject only, under 60
+  characters. No scope in parentheses. See "Commit messages" above.
+
+## Verification commands
+
+The exact commands that prove a change is safe here. The builder runs these; the
+reviewer re-runs them rather than trusting the report.
+
+```bash
+npm run typecheck      # next typegen && tsc --noEmit
+npm run lint
+npm run test           # node unit tests + every story in Chromium
+npm run build
+npm run audit:runtime  # gated: any advisory at all fails
+npm run scan:secrets   # needs the gitleaks binary; CI is the enforcing gate
+npm run storybook:build
+```
+
+`npm run verify` chains the first three. There is no infrastructure to plan or
+template: the deploy is Vercel's Git integration.
+
+## Documentation locations
+
+| What | Where |
+|------|-------|
+| Architecture | `docs/arc42/`, numbered `01-` to `12-` |
+| Decisions | `docs/adr/`, MADR format, numbers assigned at merge |
+| Product | `docs/product/`: brief, PRDs, roadmap |
+| Personas and use cases | `docs/personas.md`, `docs/use-cases.md` |
+| Dependencies | `docs/dependencies.md` |
+| AI tooling | `docs/ai-tooling.md`, `docs/ai-roadmap.md` |
+| Run output | `docs/runs/<date>-<slug>/` |
+
+## Agent team
+
+Two layers. The four roles below come from `../ai-software-engineering/agents/`
+and run an engagement. The eight definitions in `.claude/agents/` are
+project-specific reviewers that encode this repository's invariants.
+
+| Agent | Active | Notes |
+|-------|--------|-------|
+| `technical-manager` | yes | No tracker here, so items are `UNTRACKED` and land in `docs/product/roadmap.md` |
+| `cloud-solutions-architect` | yes | Writes to `docs/adr/`. Does not approve its own proposals |
+| `devops-platform-engineer` | yes | CI and Vercel configuration. There is no Terraform or Helm in this repository |
+| `sre` | yes | Fresh context, re-runs the verification commands above |
+
+The eight project reviewers were written in a session that had already loaded
+its agent registry, so none has been executed through it. Treat them as a design
+until a run proves otherwise.
