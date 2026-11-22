@@ -21,6 +21,13 @@ export function placeholderEnvVars(): readonly string[] {
     NEXT_PUBLIC_SUPABASE_URL: publicEnv.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_SANITY_PROJECT_ID: publicEnv.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    // Optional today and read by nothing, so an unset value is correct. It is
+    // listed because the moment the dataset goes private this token becomes
+    // the only thing standing between the blog and an empty page: Sanity
+    // answers an unauthenticated read of a private dataset with HTTP 200 and
+    // an empty result, not an error, so a REPLACE value here would render a
+    // blank blog and report nothing.
+    SANITY_API_READ_TOKEN: env.SANITY_API_READ_TOKEN ?? "",
     SUPABASE_SECRET_KEY: env.SUPABASE_SECRET_KEY,
     STRIPE_SECRET_KEY: env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: env.STRIPE_WEBHOOK_SECRET,
