@@ -32,9 +32,16 @@ line "User skills"
 ls "$HOME/.claude/skills" 2>/dev/null | sed 's/^/  /'
 
 line "This repository's agents"
-for f in .claude/agents/*.md; do
-  printf '  %-24s model=%s\n' "$(basename "$f" .md)" "$(sed -n 's/^model: //p' "$f" | head -1)"
-done
+# An unmatched glob expands to the literal pattern, which printed a row reading
+# "* model=" and still exited 0. CLAUDE.md tells agents to trust this output, so
+# a garbage row is worse than an error: it reads as a real agent named "*".
+if compgen -G ".claude/agents/*.md" >/dev/null; then
+  for f in .claude/agents/*.md; do
+    printf '  %-24s model=%s\n' "$(basename "$f" .md)" "$(sed -n 's/^model: //p' "$f" | head -1)"
+  done
+else
+  echo "  none under $(pwd). This script reports the agents of the directory it runs in."
+fi
 
 line "Workspace assets (../ai-software-engineering)"
 W=../ai-software-engineering
