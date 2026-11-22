@@ -75,12 +75,29 @@ is_secret() {
 # overlapping rows and non-deterministic resolution. Delete every existing row
 # for the key first, then create exactly one.
 delete_existing() {
-  local key="$1"
-  local ids
-  ids=$(curl -sS "https://api.vercel.com/v9/projects/$PROJECT/env?decrypt=false" \
-        -H "Authorization: Bearer $TOKEN" \
-    | tr '{' '\n' | grep -F "\"key\":\"$key\"" \
-    | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
+  local key="$1" tmp ids
+  tmp=$(mktemp)
+  curl -sS "https://api.vercel.com/v9/projects/$PROJECT/env?decrypt=false" \
+    -H "Authorization: Bearer $TOKEN" > "$tmp"
+
+  # Only rows whose every target is one this run is pushing to. Matching by key
+  # alone deleted a row covering production during a development+preview run and
+  # left production with nothing: a row is not this run's to remove unless this
+  # run replaces every target it covers.
+  ids=$(TARGETS="$TARGETS" KEY="$key" python3 - "$tmp" <<'PYEOF'
+import json, os, sys
+targets = set(json.loads(os.environ["TARGETS"]))
+key = os.environ["KEY"]
+rows = json.load(open(sys.argv[1])).get("envs", [])
+for r in rows:
+    if r.get("key") != key:
+        continue
+    if set(r.get("target") or []) <= targets:
+        print(r["id"])
+PYEOF
+)
+  rm -f "$tmp"
+
   for id in $ids; do
     curl -sS -o /dev/null -X DELETE \
       "https://api.vercel.com/v9/projects/$PROJECT/env/$id" \
@@ -115,13 +132,13 @@ while IFS= read -r line || [ -n "$line" ]; do
   esac
 
   if [ -n "$value" ] && printf '%s' "$value" | grep -qiE "$PLACEHOLDER"; then
-    SKIPPED+=("$key  (placeholder value; leave it empty instead)")
+    SKIPPED+=("$key  (placeholder value; leave it empty instead)$(duplicate_note "$key")")
     skipped=$((skipped+1)); continue
   fi
 
   if [ "$key" = "NEXT_PUBLIC_SITE_URL" ] \
      && printf '%s' "$value" | grep -qE 'localhost|127\.0\.0\.1'; then
-    SKIPPED+=("$key  (localhost; empty lets Vercel use the deployment URL)")
+    SKIPPED+=("$key  (localhost; empty lets Vercel use the deployment URL)$(duplicate_note "$key")")
     skipped=$((skipped+1)); continue
   fi
 
